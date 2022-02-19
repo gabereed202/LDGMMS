@@ -1,3 +1,4 @@
+/*
 package com.ldgmms.game;
 
 
@@ -67,3 +68,6 @@ public class DamTypes {
         }
     }
 }
+
+*/
+
