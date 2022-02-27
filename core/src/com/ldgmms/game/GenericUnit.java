@@ -4,65 +4,45 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GenericUnit { //GenericUnit written by Daniel Fuchs //replace resistances and health with a hash map, return values in getters //use hash set to test if status effect is available in constant time
-    HashMap<String, Integer> statsMap;
+    //HashMap<String, Integer> statsMap;
+    int cutRes;
+    int pierceRes;
+    int poisonRes;
+    int iceRes;
+    int fireRes;
+    int slowRes;
+    int hp;         //player life
+    int hpMax;
+    int mp;         //mana points
+    int mpMax;
+    int ap;         //action points (movement points)
+    int apMax;
     ArrayList<StatusEffect.Effect> effectList;
 
     void damageHp(int magnitude) {
         int currHp = getHp();
         currHp = currHp - magnitude;
-        if (currHp > 0) { //if unit isn't dead after the attack
+        if(currHp > 0) { //if unit isn't dead after the attack
             setHp(currHp);
         } else setHp(0); //else unit is dead (we won't be doing any negative HP shenanigans)
     }
 
-    public GenericUnit(int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int hpMax, int mpMax) { //constructor for our generic unit, sets up the initial hash map for base stats as well as the hash set for status effects
-        statsMap = new HashMap<>();
-        statsMap.put("cutRes", cutRes);
-        statsMap.put("pierceRes", pierceRes);
-        statsMap.put("poisonRes", poisonRes);
-        statsMap.put("iceRes", iceRes);
-        statsMap.put("fireRes", fireRes);
-        statsMap.put("hp", hpMax);
-        statsMap.put("hpMax", hpMax);
-        statsMap.put("mp", mpMax);
-        statsMap.put("mpMax", mpMax);
+    public GenericUnit(int cut, int pierce, int poison, int ice, int fire, int slow, int life, int mana, int action) { //constructor for our generic unit, sets up the initial hash map for base stats as well as the hash set for status effects
+        cutRes = cut;
+        pierceRes = pierce;
+        poisonRes = poison;
+        iceRes = ice;
+        fireRes = fire;
+        slowRes = slow;
+        hp = life;
+        hpMax = life;
+        mp = mana;
+        mpMax = mana;
+        ap = action;
+        apMax = action;
         effectList = new ArrayList<>(); //generates hash set that will store our status effects
     }
 
-    void applyEffect(StatusEffect.Effect.EType effectType, int magnitude, int duration) { //have bleed,etc, effect created then inserted here
-        boolean effectExists = false;
-        for (StatusEffect.Effect e : effectList) {
-            if (e.effectName.equals(effectType)) {
-                effectExists = true; //flag that ensures we don't repeat status effects
-                if (e.magnitude * e.turnsRemaining < magnitude * duration) { //if existing status effect is less total damage than new, replace effects
-                    e.magnitude = magnitude;
-                    e.turnsRemaining = duration;
-                }
-                break;
-            }
-        }
-        if (effectExists == false) {
-            //need to think of a way to construct the correct status effect here, switch case?
-            switch (effectType) {
-                case Bleed:
-                    StatusEffect.Bleed bleedEffect = new StatusEffect.Bleed(magnitude, duration);
-                    effectList.add(bleedEffect);
-                    break;
-                case Poison:
-                    StatusEffect.Poison poisonEffect = new StatusEffect.Poison(magnitude, duration);
-                    effectList.add(poisonEffect);
-                    break;
-                case Burn:
-                    StatusEffect.Burn burnEffect = new StatusEffect.Burn(magnitude, duration);
-                    effectList.add(burnEffect);
-                    break;
-                case Frozen:
-                    StatusEffect.Frozen frozenEffect = new StatusEffect.Frozen(magnitude, duration);
-                    effectList.add(frozenEffect);
-                    break;
-            }
-        }
-    }
 
     void update() { //still need to implement, can do without iterator
         for (StatusEffect.Effect e : effectList) {
@@ -72,55 +52,46 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs //replace resis
     }
 
     void removeFinishedEffects() { //still need to implement
-        for (StatusEffect.Effect e : effectList) {
-            if (e.finished()) {
-                effectList.remove(e); //if effect returns that no turns are remaining, remove it from the array list
-            }
-        }
+        //if effect returns that no turns are remaining, remove it from the array list
+        effectList.removeIf(e->e.finished());
 
+    }
+
+    public ArrayList<StatusEffect.Effect> getEffectList() {
+        return effectList;
     }
 
     int getCutRes() {
-        return statsMap.get("cutRes");
+        return cutRes;
     }
 
-    int getPierceRes() {
-        return statsMap.get("pierceRes");
+    int getPierceRes() {return pierceRes;
     }
+    int getPoisonRes() {return poisonRes;}
+    int getIceRes() {return iceRes;}
+    int getFireRes() {return fireRes;}
+    int getSlowRes(){return slowRes;}
+    int getHp() {return hp;}
+    int getHpMax() {return hpMax;}
+    int getMp() {return mp;}
+    int getMpMax() {return mpMax;}
+    int getAp(){return ap;}
+    int getApMax(){return apMax;}
 
-    int getPoisonRes() {
-        return statsMap.get("poisonRes");
+    void setHp(int life) { //method will be used for both damage and healing so will need to check against maxHp
+        if (life > this.hpMax) {
+            hp = hpMax;
+        } else this.hp = life;
     }
-
-    int getIceRes() {
-        return statsMap.get("iceRes");
+    void setMp(int mana){
+        if (mana > this.mpMax){
+            mp = mpMax;
+        } else this.mp = mana;
     }
-
-    int getFireRes() {
-        return statsMap.get("fireRes");
-    }
-
-    int getHp() {
-        return statsMap.get("hp");
-    }
-
-    int getHpMax() {
-        return statsMap.get("hpMax");
-    }
-
-    int getMp() {
-        return statsMap.get("mp");
-    }
-
-    int getMpMax() {
-        return statsMap.get("mpMax");
-    }
-
-    void setHp(int hp) { //method will be used for both damage and healing so will need to check against maxHp
-        int hpMax = statsMap.get("hpMax");
-        if (hp > hpMax) {
-            statsMap.put("hp", hpMax);
-        } else statsMap.put("hp", hp);
+    void setAp(int movement){
+        if (movement > this.apMax){
+            ap = apMax;
+        } else this.ap = movement; //maybe set up the potential to store extra AP when passing turns
     }
 
 }
