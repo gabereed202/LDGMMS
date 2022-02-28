@@ -1,5 +1,4 @@
 package com.ldgmms.game;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,7 +15,7 @@ public class TBDGame extends Game {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		player = new Player(new Sprite(new Texture("rogueSprite-simple.png")));
-		setScreen(new MainMenuScreen(this, player));
+		setScreen(new MainMenuScreen(this));
 	}
 
 	@Override

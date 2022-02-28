@@ -8,6 +8,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+
 /**
  * TODO: Make a full-featured main menu screen.
  * As well as being the first screen you see,
@@ -18,20 +19,18 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class MainMenuScreen implements Screen {
     private final TBDGame game;
     private final OrthographicCamera camera;
-    private final Player player;
 
     /**
      * Constructor for the MainMenuScreen.
      * -Sean
      * @param game represents the game state
-     * @param player main Player passed to the screen
      */
-    public MainMenuScreen(TBDGame game, Player player) {
+    public MainMenuScreen(TBDGame game) {
         this.game = game;
-        this.player = player;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
+
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
@@ -54,20 +53,22 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
+
         game.font.draw(game.batch, "Main Menu Screen", width * 0.33f, height * 0.75f);
         game.font.draw(game.batch, "Press S to play on the square map.", width * 0.33f, height * 0.5f);
         game.font.draw(game.batch, "Press H to play on the hexagonal map.", width * 0.33f, height * 0.25f);
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player));
+            game.setScreen(new SquareScreen(game));
             dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            game.setScreen(new HexScreen(game, player));
+            game.setScreen(new HexScreen(game));
             dispose();
         }
     }
+
 
     /**
      * @param width -
@@ -89,13 +90,16 @@ public class MainMenuScreen implements Screen {
 
     }
 
+
     /**
      * @see ApplicationListener#resume()
      */
+
     @Override
     public void resume() {
 
     }
+
 
     /**
      * Called when this screen is no longer the current screen for a {@link Game}.
@@ -112,5 +116,7 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
 
     }
+
 }
+
 
