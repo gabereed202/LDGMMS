@@ -117,9 +117,9 @@ public class StatusEffect { //Still need to implement, bare minimum set up for c
             magnitude = m;
             turnsRemaining = turns;
         }
-        /*@Override public boolean finished(){
-            return !(turnsRemaining > 0);
-        }*/
+        @Override public boolean finished(){ //reimplement to compensate for apBonus
+            return !(turnsRemaining > 0); //rather than just returning if 0, clean up apBonus if 0
+        }
         @Override public void apply(GenericUnit u){
             u.damageHp(magnitude);
             turnsRemaining--;
@@ -127,7 +127,7 @@ public class StatusEffect { //Still need to implement, bare minimum set up for c
         }
         public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
             boolean effectExists = false;
-            effectList.removeIf(e->(e instanceof Burn));
+            effectList.removeIf(e->(e instanceof Burn) || (e instanceof Chilled));
             for (StatusEffect.Effect e : effectList) {
                 if (e instanceof Frozen){
                     effectExists = true; //flag that ensures we don't repeat status effects
@@ -158,6 +158,7 @@ public class StatusEffect { //Still need to implement, bare minimum set up for c
             turnsRemaining--;
         }
 
+        @Override
         public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
             boolean effectExists = false;
             for (StatusEffect.Effect e : effectList) {
@@ -185,11 +186,12 @@ public class StatusEffect { //Still need to implement, bare minimum set up for c
             turnsRemaining--;
             u.setAp((int)Math.ceil((float)u.apMax/(float)magnitude)); //unit is slowed
         }
+        @Override
         public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
             boolean effectExists = false;
             effectList.removeIf(e->(e instanceof Burn));
             for (StatusEffect.Effect e : effectList) {
-                if (e instanceof Frozen){
+                if (e instanceof Slow){
                     effectExists = true; //flag that ensures we don't repeat status effects
                     if (e.magnitude * e.turnsRemaining < magnitude * duration) { //if existing status effect is less total damage than new, replace effects
                         e.magnitude = magnitude;
@@ -200,10 +202,94 @@ public class StatusEffect { //Still need to implement, bare minimum set up for c
 
             }
             if (!effectExists){
-                //Frozen newEffect = new Frozen(magnitude, duration);
                 effectList.add(this);
             }
         }
 
+    }
+    public static class Heal extends Effect{
+        public Heal(int m, int turns){
+            magnitude = m;
+            turnsRemaining = turns;
+        }
+        @Override public void apply(GenericUnit u){
+            turnsRemaining--;
+            u.setHp(u.hp + magnitude); //unit is healed, should correct itself to maxHP in the setHp method
+        }
+        @Override
+        public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
+            boolean effectExists = false;
+            for (StatusEffect.Effect e : effectList) {
+                if (e instanceof Heal){
+                    effectExists = true; //flag that ensures we don't repeat status effects
+                    if (e.magnitude * e.turnsRemaining < magnitude * duration) { //if existing status effect is less total damage than new, replace effects, consider making redundant effects additive
+                        e.magnitude = magnitude;
+                        e.turnsRemaining = duration;
+                    }
+                    break;
+                }
+
+            }
+            if (!effectExists){
+                effectList.add(this);
+            }
+        }
+
+    }
+    public static class Dispel extends Effect{
+        public Dispel(int m, int turns){
+            magnitude = m;
+            turnsRemaining = turns;
+        }
+        @Override public void apply(GenericUnit u){
+            turnsRemaining--;
+            ArrayList<StatusEffect.Effect> list = u.getEffectList();
+            list.removeIf(e->!(e instanceof Dispel)); //remove all negative status effects (does not scale)
+        }
+        @Override
+        public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
+            boolean effectExists = false;
+            for (StatusEffect.Effect e : effectList) {
+                if (!(e instanceof Dispel)){
+                    effectExists = true; //flag that ensures we don't repeat status effects
+                    if (e.magnitude * e.turnsRemaining < magnitude * duration) { //if existing status effect is less total damage than new, replace effects, consider making redundant effects additive
+                        e.magnitude = magnitude;
+                        e.turnsRemaining = duration;
+                    }
+                    break;
+                }
+
+            }
+            if (!effectExists){
+                effectList.add(this);
+            }
+        }
+
+    }
+    public static class Chilled extends Effect{
+        public Chilled(int m, int turns){
+            magnitude = m;
+            turnsRemaining = turns;
+        }
+        @Override public void apply(GenericUnit u){
+            turnsRemaining--;
+            u.setAp((int)(u.getAp() * magnitude)); //magnitude should be a float here
+        }
+        public void applyEffect(ArrayList<Effect> effectList, int magnitude, int duration){
+            boolean effectExists = false;
+            for (StatusEffect.Effect e : effectList) {
+                if (e instanceof Chilled){
+                    effectExists = true; //flag that ensures we don't repeat status effects
+                    Frozen newEffect = new Frozen(magnitude, duration);
+                    newEffect.applyEffect(effectList, magnitude, duration); //2 chilled instances turns into a frozen status effect
+                    break;
+                }
+
+            }
+            if (!effectExists){
+                //Frozen newEffect = new Frozen(magnitude, duration);
+                effectList.add(this);
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
     }
 
     class CutDamage implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getCutRes();
             if(resistance < Roll.dice((int)magnitude, 3)){ //roll chance is magnitude d3
@@ -25,6 +26,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         }
     }
     class PierceDamage implements Damage{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude){
             int res = u.getPierceRes();
             if (magnitude - res > 5) {//ensures at least 5 damage taken
@@ -35,6 +37,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         }
     }
     class PoisonDamage implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration){
             int res = u.getPoisonRes();
             if(res < Roll.dice((int)magnitude, 6)){
@@ -49,6 +52,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
 
     }
     class FireDamage implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getFireRes();
             if(resistance < Roll.dice((int)magnitude, 8)){
@@ -63,11 +67,14 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
     }
 
     class IceDamage implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getIceRes();
             if(resistance < Roll.dice((int)magnitude, 6)){
                 StatusEffect.Frozen FrozenEffect = new StatusEffect.Frozen((int)magnitude, duration);
                 FrozenEffect.applyEffect( u.getEffectList(), (int)Math.ceil(magnitude/4), duration);
+            } else if(resistance < Roll.dice((int)magnitude, 8)){
+                StatusEffect.Chilled ChillEffect = new StatusEffect.Chilled((int)magnitude, duration);
             }
             if((magnitude - resistance) > 5){
                 u.damageHp((int) (magnitude - resistance));
@@ -76,12 +83,14 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         }
     }
     class Haste implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration){
             StatusEffect.Haste HasteEffect = new StatusEffect.Haste((int)magnitude, duration);
             HasteEffect.applyEffect(u.getEffectList(), (int)magnitude, duration);
         }
     }
     class Slow implements DamageEffect{
+        @Override
         public void applyDamage(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getSlowRes();
             if(resistance < Roll.dice((int)magnitude, 6)){
@@ -92,6 +101,20 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
                 u.damageHp((int) (magnitude - resistance));
             }
             else u.damageHp(5);
+        }
+    }
+    class Heal implements DamageEffect{
+        @Override
+        public void applyDamage(GenericUnit u, float magnitude, int duration) {
+            StatusEffect.Heal HealEffect = new StatusEffect.Heal((int)magnitude, duration);
+            HealEffect.applyEffect(u.getEffectList(), (int) magnitude, duration);
+        }
+    }
+    class Dispel implements DamageEffect{
+        @Override
+        public void applyDamage(GenericUnit u, float magnitude, int duration){
+            StatusEffect.Dispel DispelEffect = new StatusEffect.Dispel((int)magnitude, duration);
+            DispelEffect.applyEffect(u.getEffectList(), (int) magnitude, duration);
         }
     }
 }
