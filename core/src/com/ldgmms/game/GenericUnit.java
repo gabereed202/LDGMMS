@@ -13,33 +13,26 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
 
     ArrayList<StatusEffect.Effect> effectList;
 
-    void damageHp(int magnitude) {
-        int currHp = getHp();
-        currHp = currHp - magnitude;
-        if(currHp > 0) { //if unit isn't dead after the attack
-            setHp(currHp);
-        } else setHp(0); //else unit is dead (we won't be doing any negative HP shenanigans)
-    }
 
-    public GenericUnit(int cut, int pierce, int poison, int ice, int fire, int slow, int life, int mana, int action) { //constructor for our generic unit
-        cutRes = cut;
-        pierceRes = pierce;
-        poisonRes = poison;
-        iceRes = ice;
-        fireRes = fire;
-        slowRes = slow;
-        hp = life;
-        hpMax = life;
-        mp = mana;
-        mpMax = mana;
-        ap = action;
-        apMax = action;
+    public GenericUnit(int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax) { //constructor for our generic unit
+        this.cutRes = cutRes;
+        this.pierceRes = pierceRes;
+        this.poisonRes = poisonRes;
+        this.iceRes = iceRes;
+        this.fireRes = fireRes;
+        this.slowRes = slowRes;
+        this.hp = hpMax;
+        this.hpMax = hpMax;
+        this.mp = mpMax;
+        this.mpMax = mpMax;
+        this.ap = apMax;
+        this.apMax = apMax;
         hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
         effectList = new ArrayList<>(); //generates array list that will store our status effects
     }
 
 
-    void update() { //still need to implement, can do without iterator
+    void update() {
         for (StatusEffect.Effect e : effectList) {
             e.apply(this); //should apply every damage effect in the list
         }
@@ -48,7 +41,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
 
     void removeFinishedEffects() { //still need to implement
         //if effect returns that no turns are remaining, remove it from the array list
-        effectList.removeIf(e->e.finished());
+        effectList.removeIf(e->e.finished(this)); //need to add reference to this unit for classes where we mess with stat bonuses
 
     }
 
@@ -72,20 +65,43 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     int getAp(){return ap + apBonus;}
     int getApMax(){return apMax;}
 
-    void setHp(int life) { //method will be used for both damage and healing so will need to check against maxHp
-        if (life > this.hpMax + this.hpBonus) {
-            this.hp = this.hpMax + this.hpBonus; //is "this." necessary?
-        } else this.hp = life;
+    void setHp(int hp) { //method will be used for both damage and healing so will need to check against maxHp
+        this.hp = Math.min(hp, hpMax + hpBonus);
     }
-    void setMp(int mana){
-        if (mana > this.mpMax + this.mpBonus){
-            this.mp = this.mpMax + this.mpBonus;
-        } else this.mp = mana;
+    void setMp(int mp){
+        this.mp = Math.min(mp, mpMax + mpBonus);
     }
     void setAp(int movement){
-        if (movement > this.apMax + this.apBonus){
-            this.ap = this.apMax + this.apBonus;
-        } else this.ap = movement; //maybe set up the potential to store extra AP when passing turns
+        //maybe set up the potential to store extra AP when passing turns
+        this.ap = Math.min(movement, this.apMax + this.apBonus);
+    }
+    void setApBonus(int bonus){
+        this.apBonus += bonus; //doing += so that there can be additive bonuses
+    }
+    void setCutResBonus(int bonus){
+        this.cutResBonus += bonus;
+    }
+    void setPierceResBonus(int bonus){
+        this.pierceResBonus += bonus;
+    }
+    void setPoisonResBonus(int bonus){
+        this.poisonResBonus += bonus;
+    }
+    void setIceResBonus(int bonus){
+        this.iceResBonus += bonus;
+    }
+    void setFireResBonus(int bonus){
+        this.fireResBonus += bonus;
+    }
+    void setSlowResBonus(int bonus){
+        this.slowResBonus += bonus;
+    }
+    void damageHp(int magnitude) {
+        int currHp = getHp();
+        currHp = currHp - magnitude;
+        //if unit isn't dead after the attack set to leftover mp
+        //else unit is dead (we won't be doing any negative HP shenanigans)
+        setHp(Math.max(currHp, 0));
     }
 
 }
