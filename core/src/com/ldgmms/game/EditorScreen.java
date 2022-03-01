@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 /**
  * Map editor screen.
  * Copied and then reworked from MainMenuScreen.
+ * @author Matthew Rease
  */
 public class EditorScreen implements Screen {
     private final OrthographicCamera camera;
@@ -37,7 +38,7 @@ public class EditorScreen implements Screen {
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player)); // TODO: replace with square map editor
+            game.setScreen(new SquareEditor(game, player));
             dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
@@ -51,7 +52,7 @@ public class EditorScreen implements Screen {
     }
 
     /**
-		 * Update window size.
+     * Update window size.
      * @param width New window width
      * @param height New window heigh
      * @see ApplicationListener#resize(int, int)
@@ -72,10 +73,10 @@ public class EditorScreen implements Screen {
     /** @see ApplicationListener#resume */
     @Override
     public void resume() { }
-		/** @see ApplicationListener#hide */
+    /** @see ApplicationListener#hide */
     @Override
     public void hide() { }
-		/** @see ApplicationListener#dispose */
+    /** @see ApplicationListener#dispose */
     @Override
     public void dispose() { }
 

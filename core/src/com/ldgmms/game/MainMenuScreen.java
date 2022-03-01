@@ -57,9 +57,10 @@ public class MainMenuScreen implements Screen {
 
         game.batch.begin();
 
-        game.font.draw(game.batch, "Main Menu Screen", width * 0.33f, height * 0.75f);
-        game.font.draw(game.batch, "Press S to play on the square map.", width * 0.33f, height * 0.5f);
-        game.font.draw(game.batch, "Press H to play on the hexagonal map.", width * 0.33f, height * 0.25f);
+        game.font.draw(game.batch, "Main Menu Screen", width * 0.33f, height * 0.8f);
+        game.font.draw(game.batch, "Press S to play on the square map.", width * 0.33f, height * 0.6f);
+        game.font.draw(game.batch, "Press H to play on the hexagonal map.", width * 0.33f, height * 0.4f);
+        game.font.draw(game.batch, "Press E to open the map editor.", width * 0.33f, height * 0.2f);
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -68,6 +69,10 @@ public class MainMenuScreen implements Screen {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
             game.setScreen(new HexScreen(game, player));
+            dispose();
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            game.setScreen(new EditorScreen(game, player));
             dispose();
         }
     }
