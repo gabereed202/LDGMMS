@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -13,20 +12,20 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SquareEditor implements Screen /*implements InputProcessor*/ {
-    private TBDGame game;
-    private Player player; // Unused by this class
-    private OrthographicCamera camera;
-    private FitViewport viewport;
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer renderer;
+    private final TBDGame game;
+    private final Player player; // Unused by this class
+    private final OrthographicCamera camera;
+    private final FitViewport viewport;
+    private final TiledMap map;
+    private final OrthogonalTiledMapRenderer renderer;
 
+    private int width, height;
     private Stage stage;
     private TextButton.TextButtonStyle default_button_style;
     private TextButton btn_quit;
@@ -50,6 +49,7 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         game.batch.setProjectionMatrix(camera.combined); // Specify coordinate system?
 
         // Rendering tasks
+        renderer.render();
         Batch batch = game.batch; //Batch batch = renderer.getBatch();
         batch.begin();
         game.font.draw(batch, "TEST", 50, 50);
@@ -75,7 +75,11 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
     }
 
     public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
         viewport.update(width, height);
+
+        btn_quit.setPosition(0.0f, 768.0f - btn_quit.getHeight());
     }
 
     public void resume() { }
@@ -91,7 +95,7 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         default_button_style.font = game.font;
         default_button_style.fontColor = Color.SCARLET; //default_button_style.fontColor = Color.WHITE;
         btn_quit = new TextButton("Main Menu", default_button_style); // TODO: set graphic?
-        btn_quit.setPosition(0.0f, 0.0f);
+        btn_quit.setPosition(0.0f, 768.0f);
         /*btn_quit.setWidth(50.0f);
         btn_quit.setHeight(50.0f);*/
         btn_quit.addListener(new ClickListener(-1) {
