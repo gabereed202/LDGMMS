@@ -1,12 +1,12 @@
 
 package com.ldgmms.game;
 
-//written by Daniel Fuchs
+//written by Daniel Fuchs NOTE: calculations for resistances not finalized, planning on moving to some sort of formula where magnitude will be modified based on resistance, then passed to damage or status effect
 public class DamTypes { //casting from float to int is lossless iff the magnitude of a float is less than 2^24
     interface DamageEffect{ //can result in a status effect occurring for a number of turns
         void applyDamageEffect(GenericUnit u, float magnitude, int duration); //duration not necessarily the damage itself but the duration of status effects, u is the target
     }
-    interface DamageOnce{
+    interface DamageOnce{ //no status effect, just flat damage
         void applyDamage(GenericUnit u, float magnitude);
     }
 
@@ -25,7 +25,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         }
 
         @Override
-        public void applyDamage(GenericUnit u, float magnitude) { //temporary method, will write in such a way that damage won't incur status effects
+        public void applyDamage(GenericUnit u, float magnitude) {
             int resistance = u.getCutRes();
             if(magnitude - resistance > 5){
                 u.damageHp((int)(magnitude - resistance));

@@ -1,7 +1,6 @@
 package com.ldgmms.game;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GenericUnit { //GenericUnit written by Daniel Fuchs
     //HashMap<String, Integer> statsMap;
@@ -76,8 +75,8 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
         this.ap = Math.min(movement, this.apMax + this.apBonus);
     }
     void setApBonus(int bonus){
-        this.apBonus += bonus; //doing += so that there can be additive bonuses
-    }
+        this.apBonus += bonus;
+    }//doing += so that there can be additive bonuses from different things (spells, items, skills, etc)
     void setCutResBonus(int bonus){
         this.cutResBonus += bonus;
     }

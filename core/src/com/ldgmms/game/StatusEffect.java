@@ -1,10 +1,9 @@
 package com.ldgmms.game;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 //written by Daniel Fuchs
-public class StatusEffect { //maybe change all magnitudes to float then cast when doing damageHp or setAp
+public class StatusEffect {
     abstract static class Effect{
         float magnitude;
         int turnsRemaining;
@@ -39,7 +38,7 @@ public class StatusEffect { //maybe change all magnitudes to float then cast whe
 
             }
             if (!effectExists){
-                effectList.add(this); //will this add current class to the list? check with prof, will garbage collection take care of redundant effects?
+                effectList.add(this);
             }
         }
 
@@ -49,9 +48,6 @@ public class StatusEffect { //maybe change all magnitudes to float then cast whe
             magnitude = m;
             turnsRemaining = turns;
         }
-        /*public boolean finished(){
-            return !(turnsRemaining > 0);
-        }*/
         public void apply(GenericUnit u){
             u.damageHp((int)magnitude);
             turnsRemaining--;
@@ -80,9 +76,6 @@ public class StatusEffect { //maybe change all magnitudes to float then cast whe
             magnitude = m;
             turnsRemaining = turns;
         }
-        /*@Override public boolean finished(){
-            return !(turnsRemaining > 0);
-        }*/
         @Override public void apply(GenericUnit u){
             u.damageHp((int)magnitude);
             turnsRemaining--;
@@ -115,7 +108,7 @@ public class StatusEffect { //maybe change all magnitudes to float then cast whe
             turnsRemaining = turns;
         }
         @Override public boolean finished(GenericUnit u){ //reimplement to compensate for apBonus
-            return !(turnsRemaining > 0); //rather than just returning if 0, clean up apBonus if 0
+            return !(turnsRemaining > 0); //adjusting the apBonus not necessary because this method will set ap to zero, regardless of bonus
         }
         @Override public void apply(GenericUnit u){
             u.damageHp((int)magnitude);
