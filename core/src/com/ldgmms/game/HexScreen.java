@@ -26,11 +26,11 @@ public class HexScreen implements Screen {
      * Constructor for a new HexScreen to represent a map with a hex-based grid.
      * -Sean
      * @param game represents the game state
-     * @param player main Player passed to the screen
      */
-    public HexScreen(TBDGame game, Player player) {
+    public HexScreen(TBDGame game) {
         this.game = game;
-        this.player = player;
+        this.player = game.player;
+        player.isScreenHex = true;
     }
 
     /**
@@ -50,8 +50,8 @@ public class HexScreen implements Screen {
         player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
 
         // initialize player location on the current map
-        player.setPosition(3 * player.getCollisionLayer().getTileWidth(),
-                4 * player.getCollisionLayer().getTileHeight());
+        player.setPosition(0 * player.getCollisionLayer().getTileWidth(),
+                0 * player.getCollisionLayer().getTileHeight());
 
         Gdx.input.setInputProcessor(player);
 
@@ -72,19 +72,19 @@ public class HexScreen implements Screen {
         // TODO: find a better way to do this inside the Player class
         if (player.getX() < 0)
             player.setX(0);
-        if (player.getX() > 528 - 32)
-            player.setX(528 - 32);
+        if (player.getX() > viewport.getWorldWidth() - player.getWidth())
+            player.setX(viewport.getWorldWidth() - player.getWidth());
         if (player.getY() < 0)
             player.setY(0);
-        if (player.getY() > 392 - 32)
-            player.setY(392 - 32);
+        if (player.getY() > viewport.getWorldHeight() - player.getHeight())
+            player.setY(viewport.getWorldHeight() - player.getHeight());
 
         renderer.getBatch().begin();
         player.draw(renderer.getBatch());
         renderer.getBatch().end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player));
+            game.setScreen(new SquareScreen(game));
             dispose();
         }
     }
@@ -118,10 +118,13 @@ public class HexScreen implements Screen {
 
     /**
      * Called when this screen is no longer the current screen for a {@link Game}.
+     * - sean
      */
     @Override
     public void hide() {
-
+        // reset player's hex location when leaving a hex map
+        player.setHexX(1 * player.getWidth());
+        player.setHexY(1 * player.getHeight());
     }
 
     /**
@@ -129,7 +132,7 @@ public class HexScreen implements Screen {
      */
     @Override
     public void dispose() {
-
+        map.dispose();
+        renderer.dispose();
     }
 }
-

@@ -19,17 +19,14 @@ import com.badlogic.gdx.utils.ScreenUtils;
 public class MainMenuScreen implements Screen {
     private final TBDGame game;
     private final OrthographicCamera camera;
-    private final Player player;
 
     /**
      * Constructor for the MainMenuScreen.
      * -Sean
      * @param game represents the game state
-     * @param player main Player passed to the screen
      */
-    public MainMenuScreen(TBDGame game, Player player) {
+    public MainMenuScreen(TBDGame game) {
         this.game = game;
-        this.player = player;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
     }
@@ -63,11 +60,11 @@ public class MainMenuScreen implements Screen {
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player));
+            game.setScreen(new SquareScreen(game));
             dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            game.setScreen(new HexScreen(game, player));
+            game.setScreen(new HexScreen(game));
             dispose();
         }
     }
@@ -121,4 +118,3 @@ public class MainMenuScreen implements Screen {
     }
 
 }
-
