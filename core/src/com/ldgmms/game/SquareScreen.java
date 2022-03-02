@@ -14,23 +14,22 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SquareScreen implements Screen {
-    private final TBDGame game;
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
-    private FitViewport viewport; // used for scaling the game as the window dynamically resizes
-
-    private final Player player;
+    private final TBDGame game;                     // reference to our game
+    private TiledMap map;                           // this screen's map
+    private OrthogonalTiledMapRenderer renderer;    // square renderer
+    private OrthographicCamera camera;              // this screen's camera
+    private FitViewport viewport;                   // enables smooth screen resizing
+    private final Player player;                    // player reference
 
     /**
      * Constructor for a new SquareScreen to represent a map with a square-based grid.
      * -Sean
      * @param game represents the game state
-     * @param player main Player passed to the screen
      */
-    public SquareScreen(TBDGame game, Player player) {
+    public SquareScreen(TBDGame game) {
         this.game = game;
-        this.player = player;
+        this.player = game.player;
+        player.isScreenHex = false;
     }
 
     /**
@@ -60,20 +59,22 @@ public class SquareScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        assert(player != null);
+        assert (camera != null);
         ScreenUtils.clear(0, 0, 0.2f, 1);
         renderer.setView(camera);
         renderer.render();
 
         // make sure player stays within screen bounds
-        // TODO: find a better way to handle this inside the Player class without magic numbers
+        // TODO: find a better way to handle this inside the Player class
         if (player.getX() < 0)
             player.setX(0);
-        if (player.getX() > 1024 - 32)
-            player.setX(1024 - 32);
+        if (player.getX() > viewport.getWorldWidth() - player.getWidth())
+            player.setX(viewport.getWorldWidth() - player.getWidth());
         if (player.getY() < 0)
             player.setY(0);
-        if (player.getY() > 768 - 32)
-            player.setY(768 - 32);
+        if (player.getY() > viewport.getWorldHeight() - player.getHeight())
+            player.setY(viewport.getWorldHeight() - player.getHeight());
 
         renderer.getBatch().begin();
         player.draw(renderer.getBatch());
@@ -84,13 +85,14 @@ public class SquareScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
             player.setSquareX(player.getX());
             player.setSquareY(player.getY());
-            game.setScreen(new HexScreen(game, player));
+            game.setScreen(new HexScreen(game));
             dispose();
         }
     }
 
     /**
      * Called whenever you resize the window.
+     * -Sean
      * @param width -
      * @param height -
      * @see ApplicationListener#resize(int, int)
