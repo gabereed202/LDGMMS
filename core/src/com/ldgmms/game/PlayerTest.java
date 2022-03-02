@@ -1,12 +1,9 @@
 package com.ldgmms.game;
 
-
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class PlayerTest {
 
@@ -21,6 +18,6 @@ public class PlayerTest {
     public void playerNullIfExists() {
         // should fail
         Player player = new Player();
-        assertNotNull(player);
+        assertNull(player);
     }
 }
