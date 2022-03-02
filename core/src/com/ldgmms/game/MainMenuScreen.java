@@ -41,7 +41,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Called when the screen should render itself.
-     *
+     * -Sean
      * @param delta The time in seconds since the last render.
      */
     @Override

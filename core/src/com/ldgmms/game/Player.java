@@ -15,13 +15,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
  * -Sean
  */
 public class Player extends Sprite implements InputProcessor {
-    private TiledMapTileLayer collisionLayer;
-    private float squareX, squareY; // for remembering square-coordinates when transitioning to & from hex-coordinates
-    private float hexX, hexY;
-    protected boolean isScreenHex;
-    private boolean debugFlag = true;   // useful for testing
-
-    private boolean isOffset = true;
+    private TiledMapTileLayer collisionLayer;   // tells us which tiles are collidable
+    private float squareX, squareY;             // remembers players square screen coordinates
+    private float hexX, hexY;                   // temporary x and y locations while on a hex screen
+    protected boolean isScreenHex;              // used to tell what kind of screen the player is currently on
+    private boolean debugFlag = true;           // useful for testing
+    private boolean isOffset = true;            // helpful for moving on hex maps (not a fan, but it works)
 
     /**
      * Constructor for a new Player object.
@@ -30,6 +29,11 @@ public class Player extends Sprite implements InputProcessor {
      */
     public Player(Sprite sprite) {
         super(sprite);
+        isScreenHex = false;
+    }
+
+    // empty player for testing
+    public Player() {
         isScreenHex = false;
     }
 
@@ -48,8 +52,6 @@ public class Player extends Sprite implements InputProcessor {
         this.squareY = getY();
         isScreenHex = false;
     }
-
-
 
     /**
      * Helpful if you need to calculate tile widths
@@ -132,7 +134,8 @@ public class Player extends Sprite implements InputProcessor {
     }
 
     /**
-     * Checks whether the given cell has the "blocked" property which is represented in the cell's tileset file
+     * Checks whether the given cell has the "blocked" property which is represented in the cell's tileset file.
+     * Heavily inspired by Dermetfan's videos on youtube about tiledmaps in libGDX.
      * -Sean
      * @param x units measured in pixels
      * @param y units measured in pixels
@@ -152,7 +155,7 @@ public class Player extends Sprite implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-
+        // NOTE: getWidth() and getHeight() are in reference to the player sprite
         if (isScreenHex) { // currently on a hex map
             hexX = getX();
             hexY = getY();
@@ -174,10 +177,10 @@ public class Player extends Sprite implements InputProcessor {
                         setY( getY() - getHeight() * 3/4);
                         if (isOffset) {
                             isOffset = false;
-                            setX(getX() + getWidth() / 2);
+                            setX(getX() + getWidth()/2);
                         } else {
                             isOffset = true;
-                            setX(getX() - getWidth() / 2);
+                            setX(getX() - getWidth()/2);
                         }
                     }
                     break;
@@ -217,6 +220,7 @@ public class Player extends Sprite implements InputProcessor {
             }
         }
 
+        // debug player movement
         if (debugFlag) {
             System.out.println("isMapHex: " + isScreenHex);
             System.out.println(getX() + " " + getY());

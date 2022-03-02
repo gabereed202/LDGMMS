@@ -14,13 +14,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SquareScreen implements Screen {
-    private final TBDGame game;
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
-    private FitViewport viewport; // used for scaling the game as the window dynamically resizes
-
-    private final Player player;
+    private final TBDGame game;                     // reference to our game
+    private TiledMap map;                           // this screen's map
+    private OrthogonalTiledMapRenderer renderer;    // square renderer
+    private OrthographicCamera camera;              // this screen's camera
+    private FitViewport viewport;                   // enables smooth screen resizing
+    private final Player player;                    // player reference
 
     /**
      * Constructor for a new SquareScreen to represent a map with a square-based grid.
@@ -60,6 +59,8 @@ public class SquareScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        assert(player != null);
+        assert (camera != null);
         ScreenUtils.clear(0, 0, 0.2f, 1);
         renderer.setView(camera);
         renderer.render();
@@ -91,6 +92,7 @@ public class SquareScreen implements Screen {
 
     /**
      * Called whenever you resize the window.
+     * -Sean
      * @param width -
      * @param height -
      * @see ApplicationListener#resize(int, int)
