@@ -15,8 +15,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
  * -Sean
  */
 public class Player extends Sprite implements InputProcessor {
-    private TiledMapTileLayer collisionLayer;
-    private float squareX, squareY; // for remembering square-coordinates when transitioning to & from hex-coordinates
+    private TiledMapTileLayer collisionLayer;   // tells us which tiles are collidable
+    private float squareX, squareY;             // remembers players square screen coordinates
+    private float hexX, hexY;                   // temporary x and y locations while on a hex screen
+    protected boolean isScreenHex;              // used to tell what kind of screen the player is currently on
+    private boolean debugFlag = true;           // useful for testing
+    private boolean isOffset = true;            // helpful for moving on hex maps (not a fan, but it works)
 
     /**
      * Constructor for a new Player object.
@@ -25,6 +29,12 @@ public class Player extends Sprite implements InputProcessor {
      */
     public Player(Sprite sprite) {
         super(sprite);
+        isScreenHex = false;
+    }
+
+    // empty player for testing
+    public Player() {
+        isScreenHex = false;
     }
 
     /**
@@ -40,6 +50,7 @@ public class Player extends Sprite implements InputProcessor {
         this.collisionLayer = collisionLayer;
         this.squareX = getX();
         this.squareY = getY();
+        isScreenHex = false;
     }
 
     /**
@@ -96,6 +107,22 @@ public class Player extends Sprite implements InputProcessor {
         this.squareY = squareY;
     }
 
+    public float getHexX() {
+        return hexX;
+    }
+
+    public void setHexX(float hexX) {
+        this.hexX = hexX;
+    }
+
+    public float getHexY() {
+        return hexY;
+    }
+
+    public void setHexY(float hexY) {
+        this.hexY = hexY;
+    }
+
     /**
      * Called when the player sprite is drawn.
      * -Sean
@@ -107,7 +134,8 @@ public class Player extends Sprite implements InputProcessor {
     }
 
     /**
-     * Checks whether the given cell has the "blocked" property which is represented in the cell's tileset file
+     * Checks whether the given cell has the "blocked" property which is represented in the cell's tileset file.
+     * Heavily inspired by Dermetfan's videos on youtube about tiledmaps in libGDX.
      * -Sean
      * @param x units measured in pixels
      * @param y units measured in pixels
@@ -127,32 +155,76 @@ public class Player extends Sprite implements InputProcessor {
      */
     @Override
     public boolean keyDown(int keycode) {
-        switch (keycode) {
-            case Input.Keys.UP:
-                if (!isCellBlocked(getX(), getY() + getHeight())) {
-                    setY(getY() + collisionLayer.getTileHeight() - 8);
-                }
-                System.out.println(getX() + " " + getY());
-                break;
-            case Input.Keys.DOWN:
-                if (!isCellBlocked(getX(), getY() - getHeight())) {
-                    setY(getY() - collisionLayer.getTileHeight() - 8);
-                }
-                break;
-            case Input.Keys.LEFT:
-                if (!isCellBlocked(getX() - getWidth(), getY())) {
-                    setX(getX() - getWidth());
-                }
-                break;
-            case Input.Keys.RIGHT:
-                if (!isCellBlocked(getX() + getWidth(), getY())) {
-                    setX(getX() + getWidth());
-                }
-                System.out.println(getX() + " " + getY());
-                break;
+        // NOTE: getWidth() and getHeight() are in reference to the player sprite
+        if (isScreenHex) { // currently on a hex map
+            hexX = getX();
+            hexY = getY();
+            switch (keycode) {
+                case Input.Keys.UP:
+                    if (!isCellBlocked(getX(), getY() + getHeight() * 3/4)) {
+                        setY( getY() + getHeight() * 3/4);
+                        if (isOffset) {
+                            isOffset = false;
+                            setX(getX() + getWidth()/2);
+                        } else {
+                            isOffset = true;
+                            setX(getX() - getWidth()/2);
+                        }
+                    }
+                    break;
+                case Input.Keys.DOWN:
+                    if (!isCellBlocked(getX(), getY() + getHeight() * 3/4)) {
+                        setY( getY() - getHeight() * 3/4);
+                        if (isOffset) {
+                            isOffset = false;
+                            setX(getX() + getWidth()/2);
+                        } else {
+                            isOffset = true;
+                            setX(getX() - getWidth()/2);
+                        }
+                    }
+                    break;
+                case Input.Keys.LEFT:
+                    if (!isCellBlocked(getX() - getWidth(), getY())) {
+                        setX(getX() - getWidth());
+                    }
+                    break;
+                case Input.Keys.RIGHT:
+                    if (!isCellBlocked(getX() + getWidth(), getY())) {
+                        setX(getX() + getWidth());
+                    }
+                    break;
+            }
+        } else { // currently on a square map
+            switch (keycode) {
+                case Input.Keys.UP:
+                    if (!isCellBlocked(getX(), getY() + getHeight())) {
+                        setY(getY() + collisionLayer.getTileHeight() - 8);
+                    }
+                    break;
+                case Input.Keys.DOWN:
+                    if (!isCellBlocked(getX(), getY() - getHeight())) {
+                        setY(getY() - collisionLayer.getTileHeight() - 8);
+                    }
+                    break;
+                case Input.Keys.LEFT:
+                    if (!isCellBlocked(getX() - getWidth(), getY())) {
+                        setX(getX() - getWidth());
+                    }
+                    break;
+                case Input.Keys.RIGHT:
+                    if (!isCellBlocked(getX() + getWidth(), getY())) {
+                        setX(getX() + getWidth());
+                    }
+                    break;
+            }
         }
 
-        // TODO: figure out an elegant way to handle out of bounds checking here
+        // debug player movement
+        if (debugFlag) {
+            System.out.println("isMapHex: " + isScreenHex);
+            System.out.println(getX() + " " + getY());
+        }
 
         return true;
     }
@@ -244,4 +316,3 @@ public class Player extends Sprite implements InputProcessor {
         return false;
     }
 }
-
