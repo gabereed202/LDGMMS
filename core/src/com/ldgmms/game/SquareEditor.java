@@ -9,10 +9,13 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -31,8 +34,27 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
 
     private int width, height;
     private Stage stage;
-    private TextButton.TextButtonStyle default_button_style;
-    private TextButton btn_quit;
+    private TextButton.TextButtonStyle style_quit, style_ctxmenu_1, style_ctxmenu_2;
+    private TextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
+    /*private List.ListStyle style_ctx_menu;
+    private List<String> context_menu;*/
+    private boolean ctxmenu_visible;
+
+    private void toggleCtxMenu() {
+        if (ctxmenu_visible) {
+            //context_menu.remove();
+            btn_ctxmenu_1.remove();
+            btn_ctxmenu_2.remove();
+        }
+        else {
+            //stage.addActor(context_menu);
+            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY()); // Move to mouse cursor
+            btn_ctxmenu_2.setPosition(btn_ctxmenu_1.getX(), btn_ctxmenu_1.getY() + btn_ctxmenu_2.getHeight()); // Move to below first button
+            stage.addActor(btn_ctxmenu_1);
+            stage.addActor(btn_ctxmenu_2);
+        }
+        ctxmenu_visible = !ctxmenu_visible;
+    }
 
     public void dispose() {
         stage.dispose();
@@ -89,7 +111,9 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         ui_camera.position.y = height / 2.0f;
         ui_camera.update(); // Update matrices
 
+        Vector3 pos = game_camera.position.cpy();
         game_camera.setToOrtho(false, width, height);
+        game_camera.position.set(pos);
         /*game_camera.viewportWidth = width;
         game_camera.viewportHeight = height;*/
         //game_viewport.update(width, height);
@@ -110,6 +134,7 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         stage.addListener(new ClickListener(Input.Buttons.RIGHT) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                toggleCtxMenu();
             }
         });
         stage.addListener(new DragListener() {
@@ -132,16 +157,16 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
                 game_camera.translate(-dx, -dy, 0.0f);
                 setDragStartX(x);
                 setDragStartY(y);
+                if (ctxmenu_visible)
+                    toggleCtxMenu();
             }
         });
 
-        default_button_style = new TextButton.TextButtonStyle(); //default_button_style.font = new BitmapFont();
-        default_button_style.font = game.font;
-        default_button_style.fontColor = Color.SCARLET; //default_button_style.fontColor = Color.WHITE;
-        btn_quit = new TextButton("Main Menu", default_button_style); // TODO: set graphic?
+        style_quit = new TextButton.TextButtonStyle(); //default_button_style.font = new BitmapFont();
+        style_quit.font = game.font;
+        style_quit.fontColor = Color.SCARLET; //default_button_style.fontColor = Color.WHITE;
+        btn_quit = new TextButton("Main Menu", style_quit); // TODO: set graphic?
         btn_quit.setPosition(0.0f, 768.0f);
-        /*btn_quit.setWidth(50.0f);
-        btn_quit.setHeight(50.0f);*/
         btn_quit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -151,16 +176,80 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                default_button_style.fontColor = Color.BLUE;
+                style_quit.fontColor = Color.BLUE;
                 System.out.println("Hovering over button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                default_button_style.fontColor = Color.SCARLET;
+                style_quit.fontColor = Color.SCARLET;
                 System.out.println("No longer hovering over button.");
             }
         });
         stage.addActor(btn_quit);
+
+        style_ctxmenu_1 = new TextButton.TextButtonStyle();
+        style_ctxmenu_1.font = game.font;
+        style_ctxmenu_1.fontColor = Color.SCARLET;
+        btn_ctxmenu_1 = new TextButton("Thing 1", style_ctxmenu_1);
+        btn_ctxmenu_1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Clicked menu button 1.");
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                style_ctxmenu_1.fontColor = Color.BLUE;
+                System.out.println("Hovering over menu button 1.");
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                style_ctxmenu_1.fontColor = Color.SCARLET;
+                System.out.println("No longer hovering over menu button 1.");
+            }
+        });
+
+        style_ctxmenu_2 = new TextButton.TextButtonStyle();
+        style_ctxmenu_2.font = game.font;
+        style_ctxmenu_2.fontColor = Color.SCARLET;
+        btn_ctxmenu_2 = new TextButton("Thing 2", style_ctxmenu_2);
+        btn_ctxmenu_2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Clicked menu button 2.");
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                style_ctxmenu_2.fontColor = Color.BLUE;
+                System.out.println("Hovering over menu button 2.");
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                style_ctxmenu_2.fontColor = Color.SCARLET;
+                System.out.println("No longer hovering over menu button 2.");
+            }
+        });
+
+        /*style_ctx_menu = new List.ListStyle(game.font, Color.BLUE, Color.SCARLET, new BaseDrawable());
+        style_ctx_menu.selection.setMinWidth(10.0f);
+        style_ctx_menu.selection.setMinHeight(10.0f);
+        context_menu = new List<String>(style_ctx_menu);
+        context_menu.setPosition(100, 100);
+        context_menu.setItems(new String[]{ "Thing 1", "Thing 2" });
+        context_menu.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (isOver()) {
+                    System.out.println("User clicked menu option " + context_menu.getItemIndexAt(y));
+                }
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                int index = context_menu.getItemIndexAt(y);
+                System.out.println("Over index " + index);
+                context_menu.setSelectedIndex(index);
+            }
+        });*/
+        ctxmenu_visible = false;
     }
 
     public SquareEditor(TBDGame game, Player player, int width, int height) {
@@ -168,8 +257,8 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         this.player = player;
         ui_camera = new OrthographicCamera(width, height);
         ui_viewport = new ScreenViewport(ui_camera);
-        game_camera = new OrthographicCamera(width, height);
-        game_viewport = new FitViewport(width, height, game_camera);
+        game_camera = new OrthographicCamera(2048, 1536);
+        game_viewport = new FitViewport(2048, 1536, game_camera);
         map = new TmxMapLoader().load("map_squareMap.tmx"); // TODO: should not load a map, but create a fresh one!
         renderer = new OrthogonalTiledMapRenderer(map);
 
