@@ -15,12 +15,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class HexScreen implements Screen {
     private final TBDGame game;
-    private TiledMap map;
-    private HexagonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
-    private FitViewport viewport; // used for scaling the game as the window dynamically resizes
-
     private final Player player;
+    private final OrthographicCamera camera;
+    private final FitViewport viewport; // used for scaling the game as the window dynamically resizes
+    private final TiledMap map;
+    private final HexagonalTiledMapRenderer renderer;
+
+    private int width, height;
 
     /**
      * Constructor for a new HexScreen to represent a map with a hex-based grid.
@@ -28,9 +29,23 @@ public class HexScreen implements Screen {
      * @param game represents the game state
      * @param player main Player passed to the screen
      */
-    public HexScreen(TBDGame game, Player player) {
+    public HexScreen(TBDGame game, Player player, int width, int height) {
         this.game = game;
         this.player = player;
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 528, 392);
+        viewport = new FitViewport(528, 392, camera);
+        map = new TmxMapLoader().load("map_hexMap.tmx");
+        renderer = new HexagonalTiledMapRenderer(map);
+
+        this.width = width;
+        this.height = height;
+
+        // grab the collision layer for the current map
+        player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
+        // initialize player location on the current map
+        player.setPosition(3 * player.getCollisionLayer().getTileWidth(),
+                4 * player.getCollisionLayer().getTileHeight());
     }
 
     /**
@@ -39,22 +54,9 @@ public class HexScreen implements Screen {
      */
     @Override
     public void show() {
-        map = new TmxMapLoader().load("map_hexMap.tmx");
-        renderer = new HexagonalTiledMapRenderer(map);
-
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 528, 392);
-        viewport = new FitViewport(528, 392, camera);
-
-        // grab the collision layer for the current map
-        player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
-
-        // initialize player location on the current map
-        player.setPosition(3 * player.getCollisionLayer().getTileWidth(),
-                4 * player.getCollisionLayer().getTileHeight());
+        renderer.setView(camera);
 
         Gdx.input.setInputProcessor(player);
-
     }
 
     /**
@@ -65,7 +67,6 @@ public class HexScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-        renderer.setView(camera);
         renderer.render();
 
         // make sure the player stays within screen bounds
@@ -84,7 +85,7 @@ public class HexScreen implements Screen {
         renderer.getBatch().end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player));
+            game.setScreen(new SquareScreen(game, player, width, height));
             dispose();
         }
     }
@@ -96,7 +97,13 @@ public class HexScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+
         viewport.update(width, height);
+        camera.setToOrtho(false, 528, 392);
+        camera.position.x = 264; // 528 / 2
+        camera.position.y = 196; // 392 / 2
         camera.update();
     }
 
@@ -129,7 +136,8 @@ public class HexScreen implements Screen {
      */
     @Override
     public void dispose() {
-
+        renderer.dispose();
+        map.dispose();
     }
 }
 

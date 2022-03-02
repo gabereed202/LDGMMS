@@ -41,12 +41,15 @@ public class MainMenuScreen implements Screen {
      * @param game represents the game state
      * @param player main Player passed to the screen
      */
-    public MainMenuScreen(TBDGame game, Player player) {
+    public MainMenuScreen(TBDGame game, Player player, int width, int height) {
         this.game = game;
         this.player = player;
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 480);
+        camera.setToOrtho(false, width, height);
         viewport = new ScreenViewport(camera);
+
+        this.width = width;
+        this.height = height;
     }
 
 
@@ -69,7 +72,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked square button.");
-                game.setScreen(new SquareScreen(game, player));
+                game.setScreen(new SquareScreen(game, player, width, height));
                 dispose();
             }
             @Override
@@ -93,7 +96,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked hex button.");
-                game.setScreen(new HexScreen(game, player));
+                game.setScreen(new HexScreen(game, player, width, height));
                 dispose();
             }
             @Override
@@ -117,7 +120,7 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked editor button.");
-                game.setScreen(new EditorScreen(game, player));
+                game.setScreen(new EditorScreen(game, player, width, height));
                 dispose();
             }
             @Override
@@ -143,31 +146,26 @@ public class MainMenuScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        camera.update();
-
         Batch batch = game.batch; // For ease of typing
 
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
         game.font.draw(batch, "Main Menu Screen", width * 0.33f, height * 0.8f);
-//        game.font.draw(batch, "Press S to play on the square map.", width * 0.33f, height * 0.6f);
-//        game.font.draw(batch, "Press H to play on the hexagonal map.", width * 0.33f, height * 0.4f);
-//        game.font.draw(batch, "Press E to open the map editor.", width * 0.33f, height * 0.2f);
         batch.end();
         stage.act(delta);
         stage.draw();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player));
+            game.setScreen(new SquareScreen(game, player, width, height));
             dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            game.setScreen(new HexScreen(game, player));
+            game.setScreen(new HexScreen(game, player, width, height));
             dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            game.setScreen(new EditorScreen(game, player));
+            game.setScreen(new EditorScreen(game, player, width, height));
             dispose();
         }
     }
@@ -180,9 +178,14 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        System.out.println("New size: " + width + "x" + height);
         this.width = width;
         this.height = height;
+
         viewport.update(width, height);
+        camera.position.x = width / 2.0f;
+        camera.position.y = height / 2.0f;
+        camera.update();
 
         btn_square.setPosition(width * 0.33f, height * 0.6f);
         btn_hex.setPosition(width * 0.33f, height * 0.4f);

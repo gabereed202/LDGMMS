@@ -15,12 +15,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SquareScreen implements Screen {
     private final TBDGame game;
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer renderer;
-    private OrthographicCamera camera;
-    private FitViewport viewport; // used for scaling the game as the window dynamically resizes
-
     private final Player player;
+    private final OrthographicCamera camera;
+    private final FitViewport viewport; // used for scaling the game as the window dynamically resizes
+    private final TiledMap map;
+    private final OrthogonalTiledMapRenderer renderer;
+
+    private int width, height;
 
     /**
      * Constructor for a new SquareScreen to represent a map with a square-based grid.
@@ -28,9 +29,21 @@ public class SquareScreen implements Screen {
      * @param game represents the game state
      * @param player main Player passed to the screen
      */
-    public SquareScreen(TBDGame game, Player player) {
+    public SquareScreen(TBDGame game, Player player, int width, int height) {
         this.game = game;
         this.player = player;
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 1024, 768);
+        viewport = new FitViewport(1024, 768, camera);
+        map = new TmxMapLoader().load("map_squareMap.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map);
+
+        this.width = width;
+        this.height = height;
+
+        // grab the collision layer for the current map
+        player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
+        player.setPosition(player.getSquareX(), player.getSquareY());
     }
 
     /**
@@ -39,16 +52,7 @@ public class SquareScreen implements Screen {
      */
     @Override
     public void show() {
-        map = new TmxMapLoader().load("map_squareMap.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
-
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 1024, 768);
-        viewport = new FitViewport(1024, 768, camera);
-
-        // grab the collision layer for the current map
-        player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
-        player.setPosition(player.getSquareX(), player.getSquareY());
+        renderer.setView(camera);
 
         Gdx.input.setInputProcessor(player);
     }
@@ -61,7 +65,6 @@ public class SquareScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-        renderer.setView(camera);
         renderer.render();
 
         // make sure player stays within screen bounds
@@ -84,7 +87,7 @@ public class SquareScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.H)) {
             player.setSquareX(player.getX());
             player.setSquareY(player.getY());
-            game.setScreen(new HexScreen(game, player));
+            game.setScreen(new HexScreen(game, player, width, height));
             dispose();
         }
     }
@@ -97,7 +100,12 @@ public class SquareScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+
         viewport.update(width, height);
+        camera.position.x = 512; // 1024 / 2
+        camera.position.y = 384; // 768 / 2
         camera.update();
     }
 
