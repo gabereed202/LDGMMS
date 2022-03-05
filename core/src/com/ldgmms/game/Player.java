@@ -7,6 +7,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
+// TODO: move this to the base unit class eventually so we can represent every units health color
+enum HealthColor {
+    GREEN,
+    YELLOW,
+    ORANGE,
+    RED
+}
+
 /**
  * Player class extends the Sprite class to gain access to valuable methods within the Sprite superclass,
  * and implements InputProcessor in order to easily access multiple forms of user-input.
@@ -32,9 +40,40 @@ public class Player extends Sprite implements InputProcessor {
         isScreenHex = false;
     }
 
+
+    // just for white-box testing assignment
+    private int hp;
+    private HealthColor healthColor;
     // empty player for testing
     public Player() {
         isScreenHex = false;
+        hp = 100;
+        healthColor = HealthColor.GREEN;
+    }
+
+    public int getHP() {
+        return this.hp;
+    }
+
+    public void setHP(int hp) {
+        this.hp = hp;
+        if (hp >= 75) {
+            setHealthColor(HealthColor.GREEN);
+        } else if (hp < 75 && hp >= 50) {
+            setHealthColor(HealthColor.YELLOW);
+        } else if (hp < 50 && hp >= 25) {
+            setHealthColor(HealthColor.ORANGE);
+        } else if (hp < 25) {
+            setHealthColor(HealthColor.RED);
+        }
+    }
+
+    public HealthColor getHealthColor() {
+        return healthColor;
+    }
+
+    public void setHealthColor(HealthColor healthColor) {
+        this.healthColor = healthColor;
     }
 
     /**
@@ -315,4 +354,6 @@ public class Player extends Sprite implements InputProcessor {
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
+
+
 }
