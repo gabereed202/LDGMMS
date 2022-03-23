@@ -311,18 +311,17 @@ public class StatusEffect {
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResFire){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude) {
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = 0; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }

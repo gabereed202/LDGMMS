@@ -10,7 +10,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         void applyDamage(GenericUnit u, float magnitude);
     }
 
-    class CutDamage implements DamageEffect, DamageOnce{
+    static class CutDamage implements DamageEffect, DamageOnce{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getCutRes();
@@ -148,7 +148,7 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
             DispelEffect.applyEffect(u.getEffectList());
         }
     }
-    class ResistFire implements DamageEffect{
+    static class ResistFire implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.ResFire ResEffect = new StatusEffect.ResFire(magnitude, duration);
