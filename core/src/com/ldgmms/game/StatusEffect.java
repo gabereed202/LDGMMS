@@ -10,7 +10,7 @@ public class StatusEffect {
         abstract void apply(GenericUnit u);
         abstract void applyEffect(ArrayList<Effect> effectList); //should these be public?
         boolean finished(GenericUnit u) { //implement boolean method here
-            return !(turnsRemaining > 0);
+            return !(turnsRemaining >= 0);
         }
 
     }
@@ -302,9 +302,9 @@ public class StatusEffect {
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setFireResBonus(-(int)magnitude);
+                u.setFireResBonus(u.getFireResBonus() - (int)magnitude);
                 return true;
             }
         }
@@ -341,9 +341,9 @@ public class StatusEffect {
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setFireResBonus(-(int)magnitude);
+                u.setIceResBonus(u.getIceResBonus()-(int)magnitude);
                 return true;
             }
         }
@@ -382,10 +382,10 @@ public class StatusEffect {
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setCutResBonus(-(int)magnitude);
-                u.setPierceResBonus(-(int)magnitude);
+                u.setCutResBonus(u.getCutResBonus() -(int)magnitude);
+                u.setPierceResBonus(u.getPierceResBonus() -(int)magnitude);
                 return true;
             }
         }
@@ -423,9 +423,9 @@ public class StatusEffect {
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setPoisonResBonus(-(int)magnitude);
+                u.setPoisonResBonus(u.getPoisonResBonus() -(int)magnitude);
                 return true;
             }
         }
@@ -463,9 +463,9 @@ public class StatusEffect {
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setSlowResBonus(-(int)magnitude);
+                u.setSlowResBonus(u.getSlowResBonus() -(int)magnitude);
                 return true;
             }
         }

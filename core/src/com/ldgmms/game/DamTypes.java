@@ -155,28 +155,28 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
             ResEffect.applyEffect(u.getEffectList());
         }
     }
-    class ResistPhys implements DamageEffect{
+    static class ResistPhys implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.ResPhys ResEffect = new StatusEffect.ResPhys(magnitude, duration);
             ResEffect.applyEffect(u.getEffectList());
         }
     }
-    class ResistIce implements DamageEffect{
+    static class ResistIce implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.ResIce ResEffect = new StatusEffect.ResIce(magnitude, duration);
             ResEffect.applyEffect(u.getEffectList());
         }
     }
-    class ResistPoison implements DamageEffect{
+    static class ResistPoison implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.ResPoison ResEffect = new StatusEffect.ResPoison(magnitude, duration);
             ResEffect.applyEffect(u.getEffectList());
         }
     }
-    class ResistSlow implements DamageEffect{
+    static class ResistSlow implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.ResSlow ResEffect = new StatusEffect.ResSlow(magnitude, duration);
