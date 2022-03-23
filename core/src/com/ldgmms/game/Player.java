@@ -29,6 +29,7 @@ public class Player extends Sprite implements InputProcessor {
     protected boolean isScreenHex;              // used to tell what kind of screen the player is currently on
     private boolean debugFlag = true;           // useful for testing
     private boolean isOffset = true;            // helpful for moving on hex maps (not a fan, but it works)
+    private boolean isAlive = true;
 
     /**
      * Constructor for a new Player object.
@@ -38,6 +39,8 @@ public class Player extends Sprite implements InputProcessor {
     public Player(Sprite sprite) {
         super(sprite);
         isScreenHex = false;
+        hp = 100;
+        healthColor = HealthColor.GREEN;
     }
 
 
@@ -57,6 +60,11 @@ public class Player extends Sprite implements InputProcessor {
 
     public void setHP(int hp) {
         this.hp = hp;
+
+        if (hp == 0) {
+            setAlive(false);
+        }
+
         if (hp >= 75) {
             setHealthColor(HealthColor.GREEN);
         } else if (hp < 75 && hp >= 50) {
@@ -236,6 +244,11 @@ public class Player extends Sprite implements InputProcessor {
             }
         } else { // currently on a square map
             switch (keycode) {
+                /* For testing HP */
+                // TODO: Remove this once we can test damage from game inputs
+                case Input.Keys.SPACE:
+                    setHP(getHP() - 10);
+                    break;
                 case Input.Keys.UP:
                     if (!isCellBlocked(getX(), getY() + getHeight())) {
                         setY(getY() + collisionLayer.getTileHeight() - 8);
@@ -356,4 +369,11 @@ public class Player extends Sprite implements InputProcessor {
     }
 
 
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
+    }
 }

@@ -18,7 +18,7 @@ public class PlayerTest {
     public void playerNullIfExists() {
         // should fail
         Player player = new Player();
-        assertNotNull(player);
+        assertNull(player);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class PlayerTest {
     public void testPlayerFullHealthAndColorNotGreen() {
         // should pass
         Player player = new Player();
-        assertTrue(player.getHealthColor().equals(HealthColor.GREEN));
+        assertFalse(!player.getHealthColor().equals(HealthColor.GREEN));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class PlayerTest {
         // should pass
         Player player = new Player();
         player.setHP(74);
-        assertTrue(player.getHealthColor().equals(HealthColor.YELLOW));
+        assertFalse(!player.getHealthColor().equals(HealthColor.YELLOW));
     }
 
     @Test
@@ -64,14 +64,14 @@ public class PlayerTest {
         // should pass
         Player player = new Player();
         player.setHP(49);
-        assertTrue(player.getHealthColor().equals(HealthColor.ORANGE));
+        assertFalse(!player.getHealthColor().equals(HealthColor.ORANGE));
     }
 
     @Test
     public void testPlayerHealthLessThan25AndRed() {
         // should pass
         Player player = new Player();
-        player.setHP(0);
+        player.setHP(1);
         assertTrue(player.getHealthColor().equals(HealthColor.RED));
     }
 
@@ -79,7 +79,21 @@ public class PlayerTest {
     public void testPlayerHealthLessThan25AndNotRed() {
         // should pass
         Player player = new Player();
+        player.setHP(1);
+        assertFalse(!player.getHealthColor().equals(HealthColor.RED));
+    }
+
+    @Test
+    public void testPlayerHealthIs0AndPlayerIsDead() {
+        Player player = new Player();
         player.setHP(0);
-        assertTrue(player.getHealthColor().equals(HealthColor.RED));
+        assertTrue(!player.isAlive());
+    }
+
+    @Test
+    public void testPlayerHealthIs0AndPlayerIsNotDead() {
+        Player player = new Player();
+        player.setHP(0);
+        assertFalse(player.isAlive());
     }
 }
