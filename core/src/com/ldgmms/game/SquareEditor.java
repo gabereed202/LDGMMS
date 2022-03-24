@@ -75,7 +75,6 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         //Batch batch = game.batch;
         Batch batch = renderer.getBatch();
 
-
         // Rendering tasks
         batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
         renderer.render();

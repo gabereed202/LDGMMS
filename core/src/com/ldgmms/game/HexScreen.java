@@ -21,7 +21,7 @@ public class HexScreen implements Screen {
     private final TiledMap map;
     private final HexagonalTiledMapRenderer renderer;
 
-    private int width, height;
+    private int width, height; // Matthew Rease
 
     /**
      * Constructor for a new HexScreen to represent a map with a hex-based grid.
@@ -38,6 +38,7 @@ public class HexScreen implements Screen {
         map = new TmxMapLoader().load("map_hexMap.tmx");
         renderer = new HexagonalTiledMapRenderer(map);
 
+        // Set private fields
         this.width = width;
         this.height = height;
 
@@ -97,6 +98,7 @@ public class HexScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        // Update local variables
         this.width = width;
         this.height = height;
 

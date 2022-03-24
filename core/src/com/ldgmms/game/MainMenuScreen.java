@@ -30,6 +30,7 @@ public class MainMenuScreen implements Screen {
     private final TBDGame game;
     private final Player player;
 
+    // Matthew Rease
     private int width, height;
     private Stage stage;
     private TextButton.TextButtonStyle style_square, style_hex, style_editor;
@@ -42,12 +43,14 @@ public class MainMenuScreen implements Screen {
      * @param player main Player passed to the screen
      */
     public MainMenuScreen(TBDGame game, Player player, int width, int height) {
+        // Set final (private) fields
         this.game = game;
         this.player = player;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, width, height);
         viewport = new ScreenViewport(camera);
 
+        // Set regular (private) fields
         this.width = width;
         this.height = height;
     }
@@ -55,6 +58,7 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
+		 * @author Matthew Rease
      */
     @Override
     public void show() {
@@ -64,6 +68,7 @@ public class MainMenuScreen implements Screen {
 
         // All buttons need their own style so we can individually change their colors
 
+        // Create square map button
         style_square = new TextButton.TextButtonStyle();
         style_square.font = game.font;
         style_square.fontColor = Color.SCARLET;
@@ -88,6 +93,7 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(btn_square);
 
+        // Create hexagonal map button
         style_hex = new TextButton.TextButtonStyle();
         style_hex.font = game.font;
         style_hex.fontColor = Color.SCARLET;
@@ -112,6 +118,7 @@ public class MainMenuScreen implements Screen {
         });
         stage.addActor(btn_hex);
 
+        // Create map editor button
         style_editor = new TextButton.TextButtonStyle();
         style_editor.font = game.font;
         style_editor.fontColor = Color.SCARLET;
@@ -148,14 +155,15 @@ public class MainMenuScreen implements Screen {
 
         Batch batch = game.batch; // For ease of typing
 
+        // Rendering tasks
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
         game.font.draw(batch, "Main Menu Screen", width * 0.33f, height * 0.8f);
         batch.end();
         stage.act(delta);
         stage.draw();
 
+        // User input
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             game.setScreen(new SquareScreen(game, player, width, height));
             dispose();
@@ -178,15 +186,18 @@ public class MainMenuScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
-        System.out.println("New size: " + width + "x" + height);
+        // Set local variables
         this.width = width;
         this.height = height;
+        System.out.println("New size: " + width + "x" + height);
 
+        // Update things for rendering
         viewport.update(width, height);
         camera.position.x = width / 2.0f;
         camera.position.y = height / 2.0f;
         camera.update();
 
+        // Reposition UI elements
         btn_square.setPosition(width * 0.33f, height * 0.6f);
         btn_hex.setPosition(width * 0.33f, height * 0.4f);
         btn_editor.setPosition(width * 0.33f, height * 0.2f);

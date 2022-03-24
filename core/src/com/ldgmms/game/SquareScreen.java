@@ -21,7 +21,7 @@ public class SquareScreen implements Screen {
     private final TiledMap map;
     private final OrthogonalTiledMapRenderer renderer;
 
-    private int width, height;
+    private int width, height; // Matthew Rease
 
     /**
      * Constructor for a new SquareScreen to represent a map with a square-based grid.
@@ -38,6 +38,7 @@ public class SquareScreen implements Screen {
         map = new TmxMapLoader().load("map_squareMap.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
 
+        // Set private fields
         this.width = width;
         this.height = height;
 
@@ -100,6 +101,7 @@ public class SquareScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        // Update local variables
         this.width = width;
         this.height = height;
 

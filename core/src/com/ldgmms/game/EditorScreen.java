@@ -55,16 +55,15 @@ public class EditorScreen implements Screen {
 
         Batch batch = game.batch;
 
+        // Render tasks
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
         game.font.draw(batch, "Map Editor Screen", width * 0.33f, height * 0.8f);
-        //game.font.draw(batch, "Press S to edit a square map.", width * 0.33f, height * 0.6f);
-        //game.font.draw(batch, "Press H to edit a hexagonal map.", width * 0.33f, height * 0.4f);
         batch.end();
         stage.act(delta);
         stage.draw();
 
+        // User input
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             game.setScreen(new SquareEditor(game, player, width, height));
             dispose();
@@ -87,12 +86,15 @@ public class EditorScreen implements Screen {
      */
     @Override
     public void resize(int width, int height) {
+        // Update local variables
         this.width = width;
         this.height = height;
 
+        // Update things for rendering
         viewport.update(width, height);
         camera.update();
 
+        // Reposition UI elements
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
         btn_square.setPosition(width * 0.33f, height * 0.6f);
         btn_hex.setPosition(width * 0.33f, height * 0.4f);
@@ -111,11 +113,11 @@ public class EditorScreen implements Screen {
 
         // All buttons need their own style so we can individually change their colors
 
+        // Create return to main menu button
         style_quit = new TextButton.TextButtonStyle();
         style_quit.font = game.font;
         style_quit.fontColor = Color.SCARLET;
         btn_quit = new TextButton("Main Menu", style_quit); // TODO: set graphic?
-        //btn_quit.setPosition(0.0f, 768.0f);
         btn_quit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -136,6 +138,7 @@ public class EditorScreen implements Screen {
         });
         stage.addActor(btn_quit);
 
+        // Create square map button
         style_square = new TextButton.TextButtonStyle();
         style_square.font = game.font;
         style_square.fontColor = Color.SCARLET;
@@ -160,6 +163,7 @@ public class EditorScreen implements Screen {
         });
         stage.addActor(btn_square);
 
+        // Create hexagonal map button
         style_hex = new TextButton.TextButtonStyle();
         style_hex.font = game.font;
         style_hex.fontColor = Color.SCARLET;
@@ -191,12 +195,14 @@ public class EditorScreen implements Screen {
      * @param player (Currently unused, just passed to other methods?)
      */
     public EditorScreen(TBDGame game, Player player, int width, int height) {
+        // Set final (private) fields
         this.game = game;
         this.player = player;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
         viewport = new ScreenViewport(camera);
 
+        // Set regular (private) fields
         this.width = width;
         this.height = height;
     }
