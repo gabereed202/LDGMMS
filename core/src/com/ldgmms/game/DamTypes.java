@@ -1,6 +1,9 @@
 
 package com.ldgmms.game;
 
+import com.badlogic.gdx.math.MathUtils;
+
+//make resistances a separate class that extends effect, move resistances to this class, store resistances in hashmap on unit
 //written by Daniel Fuchs NOTE: calculations for resistances not finalized, planning on moving to some sort of formula where magnitude will be modified based on resistance, then passed to damage or status effect
 public class DamTypes { //casting from float to int is lossless iff the magnitude of a float is less than 2^24
     interface DamageEffect{ //can result in a status effect occurring for a number of turns
@@ -15,59 +18,45 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getCutRes();
             if(resistance < Roll.dice((int)magnitude, 3)){ //roll chance is magnitude d3
-                StatusEffect.Bleed BleedEffect = new StatusEffect.Bleed(magnitude, duration); //update applyEffect method, passing magnitude and duration no longer necessary
+                StatusEffect.Bleed BleedEffect = new StatusEffect.Bleed(magnitude, duration);
                 BleedEffect.applyEffect(u.getEffectList());
             }
-            if((magnitude - resistance) > 5){
-                u.damageHp((int)(magnitude - resistance));
-            } else u.damageHp(5);
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5)); //checks if damage formula is greater than or less than 5, if less than, do 5 damage
 
         }
 
         @Override
         public void applyDamage(GenericUnit u, float magnitude) {
             int resistance = u.getCutRes();
-            if(magnitude - resistance > 5){
-                u.damageHp((int)(magnitude - resistance));
-            } else u.damageHp(5);
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
 
         }
     }
-    class PierceDamage implements DamageOnce{
+    static class PierceDamage implements DamageOnce{
         @Override
         public void applyDamage(GenericUnit u, float magnitude){
-            int res = u.getPierceRes();
-            if (magnitude - res > 5) {//ensures at least 5 damage taken
-                u.damageHp(((int)magnitude - res));
-            } else {
-                u.damageHp(5);
-            }
+            int resistance = u.getPierceRes();
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
     }
-    class PoisonDamage implements DamageEffect, DamageOnce{
+    static class PoisonDamage implements DamageEffect, DamageOnce{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
-            int res = u.getPoisonRes();
-            if(res < Roll.dice((int)magnitude, 6)){
+            int resistance = u.getPoisonRes();
+            if(resistance < Roll.dice((int)magnitude, 6)){
                 StatusEffect.Poison PoisonEffect = new StatusEffect.Poison(magnitude * 0.75f, duration); //poisoned effect will give 3/4 damage, maybe invert instead?
                 PoisonEffect.applyEffect(u.getEffectList());
             }
-            if((magnitude - res) > 5){
-                u.damageHp(((int)magnitude - res));
-            }
-            else u.damageHp(5);
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
 
         @Override
         public void applyDamage(GenericUnit u, float magnitude) {
-            int res = u.getPoisonRes();
-            if(magnitude - res > 5){
-                u.damageHp((int)magnitude-res);
-            } else u.damageHp(5);
-
+            int resistance = u.getPoisonRes();
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
     }
-    class FireDamage implements DamageEffect, DamageOnce{
+    static class FireDamage implements DamageEffect, DamageOnce{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getFireRes();
@@ -75,21 +64,17 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
                 StatusEffect.Burn BurnEffect = new StatusEffect.Burn(magnitude * 0.5f, duration);
                 BurnEffect.applyEffect(u.getEffectList());
             }
-            if((magnitude - resistance) > 5){
-                u.damageHp((int)(magnitude - resistance));
-            } else u.damageHp(5);
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
 
         @Override
         public void applyDamage(GenericUnit u, float magnitude) {
-            int res = u.getFireRes();
-            if(magnitude - res > 5){
-                u.damageHp((int)(magnitude - res));
-            } else u.damageHp(5);
+            int resistance = u.getFireRes();
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
     }
 
-    class IceDamage implements DamageEffect, DamageOnce{
+    static class IceDamage implements DamageEffect, DamageOnce{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getIceRes();
@@ -98,29 +83,25 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
                 FrozenEffect.applyEffect(u.getEffectList());
             } else if(resistance < Roll.dice((int)magnitude, 8)){
                 StatusEffect.Chilled ChillEffect = new StatusEffect.Chilled(magnitude/8, duration);
+                ChillEffect.applyEffect(u.getEffectList());
             }
-            if((magnitude - resistance) > 5){
-                u.damageHp((int) (magnitude - resistance));
-            }
-            else u.damageHp(5);
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
 
         @Override
         public void applyDamage(GenericUnit u, float magnitude) {
-            int res = u.getIceRes();
-            if(magnitude - res > 5){
-                u.damageHp((int)(magnitude - res));
-            } else u.damageHp(5);
+            int resistance = u.getIceRes();
+            u.damageHp(Math.max(MathUtils.ceil(magnitude * (1 - ((float) resistance / 100))), 5));
         }
     }
-    class Haste implements DamageEffect{
+    static class Haste implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.Haste HasteEffect = new StatusEffect.Haste(magnitude, duration);
             HasteEffect.applyEffect(u.getEffectList());
         }
     }
-    class Slow implements DamageEffect{
+    static class Slow implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             int resistance = u.getSlowRes();
@@ -128,20 +109,16 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
                 StatusEffect.Slow SlowEffect = new StatusEffect.Slow(magnitude, duration);
                 SlowEffect.applyEffect(u.getEffectList()); //remove int casting, multiply apMax by magnitude (apMax * 0.75)
             }
-            if((magnitude - resistance) > 5){
-                u.damageHp((int) (magnitude - resistance));
-            }
-            else u.damageHp(5);
         }
     }
-    class Heal implements DamageEffect{
+    static class Heal implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration) {
             StatusEffect.Heal HealEffect = new StatusEffect.Heal(magnitude, duration);
             HealEffect.applyEffect(u.getEffectList());
         }
     }
-    class Dispel implements DamageEffect{
+    static class Dispel implements DamageEffect{
         @Override
         public void applyDamageEffect(GenericUnit u, float magnitude, int duration){
             StatusEffect.Dispel DispelEffect = new StatusEffect.Dispel(magnitude, duration);

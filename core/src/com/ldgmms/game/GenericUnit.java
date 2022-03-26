@@ -35,14 +35,15 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
         for (StatusEffect.Effect e : effectList) {
             e.apply(this); //should apply every damage effect in the list
         }
+        effectList.removeIf(e->e.finished(this));
 
     }
 
-    void removeFinishedEffects() { //still need to implement
+    /*void removeFinishedEffects() { //merge into update
         //if effect returns that no turns are remaining, remove it from the array list
         effectList.removeIf(e->e.finished(this)); //need to add reference to this unit for classes where we mess with stat bonuses
 
-    }
+    }*/
 
     public ArrayList<StatusEffect.Effect> getEffectList() {
         return effectList;
@@ -81,7 +82,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     }
     void setApBonus(int bonus){
         this.apBonus = bonus;
-    }//doing += so that there can be additive bonuses from different things (spells, items, skills, etc) EDIT: changed because it broke removing finished effects, item bonuses will have to be implemented differently
+    }//have set as well as add because method is sometimes called for additive bonuses while other times it is to remove a bonus, using additive for all instances causes problems when new effect is added and needs to replace old effect
     void setCutResBonus(int bonus){
         this.cutResBonus = bonus;
     }
@@ -98,6 +99,12 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     void setSlowResBonus(int bonus){
         this.slowResBonus = bonus;
     }
+    void addFireResBonus(int bonus){ this.fireResBonus += bonus; }
+    void addIceResBonus(int bonus){ this.iceResBonus += bonus;}
+    void addCutResBonus(int bonus){this.cutResBonus += bonus;}
+    void addPierceResBonus(int bonus){this.pierceResBonus += bonus;}
+    void addPoisonResBonus(int bonus){this.poisonResBonus += bonus;}
+    void addSlowResBonus(int bonus){this.slowResBonus += bonus;}
     void damageHp(int magnitude) {
         int currHp = getHp();
         currHp = currHp - magnitude;
