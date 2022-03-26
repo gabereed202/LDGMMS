@@ -8,7 +8,7 @@ public class StatusEffect {
         float magnitude;
         int turnsRemaining;
         abstract void apply(GenericUnit u);
-        abstract void applyEffect(ArrayList<Effect> effectList); //should these be public?
+        abstract void applyEffect(ArrayList<Effect> effectList);
         boolean finished(GenericUnit u) { //implement boolean method here
             return !(turnsRemaining > 0);
         }
@@ -48,6 +48,7 @@ public class StatusEffect {
             magnitude = m;
             turnsRemaining = turns;
         }
+
         public void apply(GenericUnit u){
             u.damageHp((int)magnitude);
             turnsRemaining--;
@@ -211,8 +212,9 @@ public class StatusEffect {
             turnsRemaining = turns;
         }
         @Override public void apply(GenericUnit u){
+            u.setHp(u.hp + (int) magnitude); //unit is healed, should correct itself to maxHP in the setHp method
             turnsRemaining--;
-            u.setHp(u.hp + (int)magnitude); //unit is healed, should correct itself to maxHP in the setHp method
+
         }
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
@@ -297,32 +299,31 @@ public class StatusEffect {
         @Override public void apply(GenericUnit u){
             turnsRemaining--;
             if(!wasApplied){
-                u.setFireResBonus((int)magnitude);
+                u.addFireResBonus((int)magnitude);
                 wasApplied = true;
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setFireResBonus(-(int)magnitude);
+                u.setFireResBonus(u.getFireResBonus() - (int)magnitude);
                 return true;
             }
         }
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResFire){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude) {
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = -1; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }
@@ -335,34 +336,33 @@ public class StatusEffect {
             wasApplied = false;
         }
         @Override public void apply(GenericUnit u){
-            turnsRemaining--;
             if(!wasApplied){
-                u.setIceResBonus((int)magnitude);
+                u.addIceResBonus((int)magnitude);
                 wasApplied = true;
             }
+            turnsRemaining--;
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setFireResBonus(-(int)magnitude);
+                u.setIceResBonus(u.getIceResBonus()-(int)magnitude);
                 return true;
             }
         }
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResIce){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude) {
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = -1; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }
@@ -377,34 +377,33 @@ public class StatusEffect {
         @Override public void apply(GenericUnit u){
             turnsRemaining--;
             if(!wasApplied){
-                u.setCutResBonus((int)magnitude);
-                u.setPierceResBonus((int)magnitude);
+                u.addCutResBonus((int)magnitude);
+                u.addPierceResBonus((int)magnitude);
                 wasApplied = true;
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setCutResBonus(-(int)magnitude);
-                u.setPierceResBonus(-(int)magnitude);
+                u.setCutResBonus(u.getCutResBonus() -(int)magnitude);
+                u.setPierceResBonus(u.getPierceResBonus() -(int)magnitude);
                 return true;
             }
         }
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResPhys){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude){
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = -1; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }
@@ -419,32 +418,31 @@ public class StatusEffect {
         @Override public void apply(GenericUnit u){
             turnsRemaining--;
             if(!wasApplied){
-                u.setPoisonResBonus((int)magnitude);
+                u.addPoisonResBonus((int)magnitude);
                 wasApplied = true;
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setPoisonResBonus(-(int)magnitude);
+                u.setPoisonResBonus(u.getPoisonResBonus() -(int)magnitude);
                 return true;
             }
         }
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResPoison){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude) {
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = -1; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }
@@ -459,32 +457,31 @@ public class StatusEffect {
         @Override public void apply(GenericUnit u){
             turnsRemaining--;
             if(!wasApplied){
-                u.setSlowResBonus((int)magnitude);
+                u.addSlowResBonus((int)magnitude);
                 wasApplied = true;
             }
         }
         @Override public boolean finished(GenericUnit u){
-            if(turnsRemaining > 0) return false;
+            if(turnsRemaining >= 0) return false;
             else{
-                u.setSlowResBonus(-(int)magnitude);
+                u.setSlowResBonus(u.getSlowResBonus() -(int)magnitude);
                 return true;
             }
         }
 
         @Override
         public void applyEffect(ArrayList<Effect> effectList){
-            boolean effectExists = false;
+            boolean effectGreater = false; //if the new effect is smaller than the old one, we won't apply it
             for(StatusEffect.Effect e : effectList){
                 if(e instanceof ResSlow){
-                    effectExists = true;
-                    if (e.magnitude < this.magnitude) {
-                        e.magnitude = this.magnitude;
-                        e.turnsRemaining = this.turnsRemaining;
+                    if (e.magnitude > this.magnitude) {
+                        effectGreater = true;
                     }
+                    else e.turnsRemaining = -1; //old effect is smaller, must be removed with next update
                     break;
                 }
             }
-            if (!effectExists){
+            if (!effectGreater){
                 effectList.add(this);
             }
         }
