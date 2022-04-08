@@ -12,19 +12,8 @@ public class PlayerTest {
      */
     @Test
     public void playerNotNullIfExists() {
-        // should pass
         Player player = new Player();
         assertNotNull(player);
-    }
-
-    /**
-     * Acceptance test.
-     */
-    @Test
-    public void playerNullIfExists() {
-        // should fail
-        Player player = new Player();
-        assertNull(player);
     }
 
     /**
@@ -33,7 +22,6 @@ public class PlayerTest {
      */
     @Test
     public void testPlayerFullHealthAndColorIsGreen() {
-        // should pass
         Player player = new Player();
         assertTrue(player.getHP() == 100);
         assertTrue(player.getHealthColor().equals(HealthColor.GREEN));
@@ -44,11 +32,13 @@ public class PlayerTest {
      * Tests the view component (health color) and the model component (player's health).
      */
     @Test
-    public void testPlayerFullHealthAndColorNotGreen() {
-        // should pass
+    public void testPlayerFullHealthAndColorNotRedOrangeYellow() {
         Player player = new Player();
         assertTrue(player.getHP() == 100);
-        assertFalse(!player.getHealthColor().equals(HealthColor.GREEN));
+        boolean testRed = player.getHealthColor().equals(HealthColor.RED);
+        boolean testOrange = player.getHealthColor().equals(HealthColor.ORANGE);
+        boolean testYellow = player.getHealthColor().equals(HealthColor.YELLOW);
+        assertFalse(testRed | testOrange | testYellow);
     }
 
     /**
@@ -58,17 +48,17 @@ public class PlayerTest {
     public void testPlayerHealthIs0AndPlayerIsDead() {
         Player player = new Player();
         player.setHP(0);
-        assertTrue(!player.isAlive());
+        assertFalse(player.isAlive());
     }
 
     /**
      * Acceptance test.
      */
     @Test
-    public void testPlayerHealthIs0AndPlayerIsNotDead() {
+    public void testPlayerHealthIsNot0AndPlayerIsNotDead() {
         Player player = new Player();
-        player.setHP(0);
-        assertFalse(player.isAlive());
+        player.setHP(1);
+        assertTrue(player.isAlive());
     }
 
     /**
@@ -95,52 +85,101 @@ public class PlayerTest {
      *     }
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
+
+    // test remaining green
+
     @Test
-    public void testPlayerHealthBetween50And75AndColorIsYellow() {
-        // should pass
+    public void testPlayerHealthIs75AndColorIsGreen() {
+        Player player = new Player();
+        player.setHP(75);
+        assertTrue(player.getHealthColor().equals(HealthColor.GREEN));
+    }
+
+    // test yellow
+    @Test
+    public void testPlayerHealthIs74AndColorIsYellow() {
         Player player = new Player();
         player.setHP(74);
         assertTrue(player.getHealthColor().equals(HealthColor.YELLOW));
     }
 
     @Test
-    public void testPlayerHealthBetween50And75AndColorIsNotYellow() {
-        // should pass
+    public void testPlayerHealthIsNot74AndColorIsNotYellow() {
         Player player = new Player();
-        player.setHP(74);
-        assertFalse(!player.getHealthColor().equals(HealthColor.YELLOW));
+        player.setHP(75);
+        assertFalse(player.getHealthColor().equals(HealthColor.YELLOW));
     }
 
     @Test
-    public void testPlayerHealthBetween25And50AndColorIsOrange() {
-        // should pass
+    public void testPlayerHealthIs50AndColorIsYellow() {
+        Player player = new Player();
+        player.setHP(50);
+        assertTrue(player.getHealthColor().equals(HealthColor.YELLOW));
+    }
+
+    @Test
+    public void testPlayerHealthIsNot50AndColorIsNotYellow() {
+        Player player = new Player();
+        player.setHP(49);
+        assertFalse(player.getHealthColor().equals(HealthColor.YELLOW));
+    }
+
+    // test orange
+    @Test
+    public void testPlayerHealthIs49AndColorIsOrange() {
         Player player = new Player();
         player.setHP(49);
         assertTrue(player.getHealthColor().equals(HealthColor.ORANGE));
     }
 
     @Test
-    public void testPlayerHealthBetween25And50AndColorIsNotOrange() {
-        // should pass
+    public void testPlayerHealthIsNot49AndColorIsNotOrange() {
         Player player = new Player();
-        player.setHP(49);
-        assertFalse(!player.getHealthColor().equals(HealthColor.ORANGE));
+        player.setHP(50);
+        assertFalse(player.getHealthColor().equals(HealthColor.ORANGE));
     }
 
     @Test
-    public void testPlayerHealthLessThan25AndRed() {
-        // should pass
+    public void testPlayerHealthIs25AndColorIsOrange() {
+        Player player = new Player();
+        player.setHP(25);
+        assertTrue(player.getHealthColor().equals(HealthColor.ORANGE));
+    }
+
+    @Test
+    public void testPlayerHealthIsNot25AndColorIsNotOrange() {
+        Player player = new Player();
+        player.setHP(24);
+        assertFalse(player.getHealthColor().equals(HealthColor.ORANGE));
+    }
+
+    // test red
+    @Test
+    public void testPlayerHealthIs24AndColorIsRed() {
+        Player player = new Player();
+        player.setHP(24);
+        assertTrue(player.getHealthColor().equals(HealthColor.RED));
+    }
+
+    @Test
+    public void testPlayerIsNot24AndColorIsNotRed() {
+        Player player = new Player();
+        player.setHP(25);
+        assertFalse(player.getHealthColor().equals(HealthColor.RED));
+    }
+
+    @Test
+    public void testPlayerIs1AndColorIsRed() {
         Player player = new Player();
         player.setHP(1);
         assertTrue(player.getHealthColor().equals(HealthColor.RED));
     }
 
     @Test
-    public void testPlayerHealthLessThan25AndNotRed() {
-        // should pass
+    public void testPlayerIs0AndColorIsRed() {
         Player player = new Player();
-        player.setHP(1);
-        assertFalse(!player.getHealthColor().equals(HealthColor.RED));
+        player.setHP(0);
+        assertTrue(player.getHealthColor().equals(HealthColor.RED));
     }
     /**
      * End of White-box testing
