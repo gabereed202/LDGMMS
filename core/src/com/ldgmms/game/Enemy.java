@@ -1,6 +1,6 @@
-package com.ldgmms.game;
+/*package com.ldgmms.game;
 
-public class Enemy extends GenericUnit{
+public class Enemy extends GenericUnit{ //this whole class could be removed, and we could add an int that determines sides on the GenericUnit class, commented out for now
     String spritePath;
     String name;
 
@@ -16,4 +16,4 @@ public class Enemy extends GenericUnit{
         this.fireResistance = fireResistance;
         this.iceResistance = iceResistance;
     }
-}
+}*/

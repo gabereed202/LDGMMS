@@ -6,14 +6,18 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     //HashMap<String, Integer> statsMap;
     int cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes; //resistances
     int cutResBonus, pierceResBonus, poisonResBonus, iceResBonus, fireResBonus, slowResBonus; //bonuses could be negative, make sure resistances never less than zero?
-    int hp, hpBonus, hpMax;          //player life
-    int mp, mpBonus, mpMax;          //mana points
+    float hp, hpBonus, hpMax;          //player life
+    float mp, mpBonus, mpMax;          //mana points
     int ap, apBonus, apMax;          //action points (movement points)
+    String spritePath;
+    String name;
 
     ArrayList<StatusEffect.Effect> effectList;
 
 
-    public GenericUnit(int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax) { //constructor for our generic unit
+    public GenericUnit(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax) { //constructor for our generic unit
+        this.spritePath = spritePath;
+        this.name = name;
         this.cutRes = cutRes;
         this.pierceRes = pierceRes;
         this.poisonRes = poisonRes;
@@ -29,6 +33,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
         hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
         effectList = new ArrayList<>(); //generates array list that will store our status effects
     }
+
 
 
     void update() {
@@ -63,17 +68,17 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     int getFireResBonus(){return fireResBonus;}
     int getSlowRes(){return slowRes + slowResBonus;}
     int getSlowResBonus(){return slowResBonus;}
-    int getHp() {return hp + hpBonus;}
-    int getHpMax() {return hpMax;}
-    int getMp() {return mp + mpBonus;}
-    int getMpMax() {return mpMax;}
+    float getHp() {return hp + hpBonus;}
+    float getHpMax() {return hpMax;}
+    float getMp() {return mp + mpBonus;}
+    float getMpMax() {return mpMax;}
     int getAp(){return ap + apBonus;}
     int getApMax(){return apMax;}
 
-    void setHp(int hp) { //method will be used for both damage and healing so will need to check against maxHp
+    void setHp(float hp) { //method will be used for both damage and healing so will need to check against maxHp
         this.hp = Math.min(hp, hpMax + hpBonus);
     }
-    void setMp(int mp){
+    void setMp(float mp){
         this.mp = Math.min(mp, mpMax + mpBonus);
     }
     void setAp(int movement){
@@ -106,7 +111,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     void addPoisonResBonus(int bonus){this.poisonResBonus += bonus;}
     void addSlowResBonus(int bonus){this.slowResBonus += bonus;}
     void damageHp(int magnitude) {
-        int currHp = getHp();
+        float currHp = getHp();
         currHp = currHp - magnitude;
         //if unit isn't dead after the attack set to leftover mp
         //else unit is dead (we won't be doing any negative HP shenanigans)

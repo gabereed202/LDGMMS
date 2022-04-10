@@ -1,5 +1,7 @@
 package com.ldgmms.game;
 
+import java.util.ArrayList;
+
 public class Hero extends GenericUnit{
 
     // experience stats
@@ -14,6 +16,7 @@ public class Hero extends GenericUnit{
     int strength;
     int defense;
     int magic;
+    float stamina;
 
     // equipment will have just 2 slots, 0 indicates primary class, 1 indicates secondary class
     int[] equipment;
@@ -51,7 +54,26 @@ public class Hero extends GenericUnit{
     // Skills[] skills;
 
 
-    public Hero() {
+    public Hero(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax){
+        super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax); //don't truly understand how super works, need to ask
+        //inserted by Daniel for now
+        this.spritePath = spritePath;
+        this.name = name;
+        this.cutRes = cutRes;
+        this.pierceRes = pierceRes;
+        this.poisonRes = poisonRes;
+        this.iceRes = iceRes;
+        this.fireRes = fireRes;
+        this.slowRes = slowRes;
+        this.hp = hpMax;
+        this.hpMax = hpMax;
+        this.mp = mpMax;
+        this.mpMax = mpMax;
+        this.ap = apMax;
+        this.apMax = apMax;
+        hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
+        effectList = new ArrayList<>(); //generates array list that will store our status effects
+        //ends here
 
         this.currentJob = null;
         this.job = -1;
@@ -62,11 +84,11 @@ public class Hero extends GenericUnit{
 
         this.equipmentStorage = new Equipment();
 
-        this.poisonResistance = 5;
-        this.cutResistance = 5;
-        this.pierceResistance = 5;
-        this.fireResistance = 5;
-        this.iceResistance = 5;
+        this.poisonRes = 5;
+        this.cutRes = 5;
+        this.pierceRes = 5;
+        this.fireRes = 5;
+        this.iceRes = 5;
 
         this.level = 1;
         this.exp = 0.0f;
@@ -82,8 +104,8 @@ public class Hero extends GenericUnit{
 
         // these are status stats that show how much health a hero has
         // heroes spend stamina and mana to use skills
-        this.health = 100.0f;
-        this.mana = 100.0f;
+        this.hp = 100.0f;
+        this.mp = 100.0f;
         this.stamina = 100.0f;
 
         this.sneak = 5;
@@ -150,23 +172,23 @@ public class Hero extends GenericUnit{
 
             if (this.job == 0) {
                 this.strength = this.strength * this.jobLevels[0];
-                this.health = this.health * this.jobLevels[0];
+                this.hp = this.hp * this.jobLevels[0];
                 this.currentJob = this.assassin;
             } else if (this.job == 1) {
                 this.magic = this.magic * this.jobLevels[1];
-                this.mana = this.mana * this.jobLevels[1];
+                this.mp = this.mp * this.jobLevels[1];
                 this.currentJob = this.scholar;
             } else if (this.job == 2) {
                 this.strength = this.strength * this.jobLevels[2];
-                this.health = this.health * this.jobLevels[2];
+                this.hp = this.hp * this.jobLevels[2];
                 this.currentJob = this.ranger;
             } else if (this.job == 3) {
                 this.magic = this.magic * this.jobLevels[3];
-                this.mana = this.mana * this.jobLevels[3];
+                this.mp = this.mp * this.jobLevels[3];
                 this.currentJob = this.sorcerer;
             } else if (this.job == 4) {
                 this.strength = this.strength * this.jobLevels[4];
-                this.health = this.health * this.jobLevels[4];
+                this.hp = this.hp * this.jobLevels[4];
                 this.currentJob = this.barbarian;
             }
         } else {
@@ -337,8 +359,8 @@ public class Hero extends GenericUnit{
 
             this.level++;
 
-            this.mana += 10;
-            this.health += 10;
+            this.mp += 10;
+            this.hp += 10;
             this.stamina += 10;
 
             this.strength += 2;
@@ -563,7 +585,7 @@ public class Hero extends GenericUnit{
         return;
     }
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) { //not sure if this main method should be here in a class file
         Hero hero = new Hero();
         hero.equipmentStorage.addEquipment(1, "sword", 4, 7);
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
@@ -571,5 +593,5 @@ public class Hero extends GenericUnit{
         System.out.println(hero.level);
         System.out.println(hero.jobLevels[hero.job]);
         hero.currentJob.skills.printMap();
-    }
+    }*/
 }
