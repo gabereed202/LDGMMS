@@ -55,24 +55,10 @@ public class Hero extends GenericUnit{
 
 
     public Hero(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax){
-        super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax); //don't truly understand how super works, need to ask
         //inserted by Daniel for now
-        this.spritePath = spritePath;
-        this.name = name;
-        this.cutRes = cutRes;
-        this.pierceRes = pierceRes;
-        this.poisonRes = poisonRes;
-        this.iceRes = iceRes;
-        this.fireRes = fireRes;
-        this.slowRes = slowRes;
-        this.hp = hpMax;
-        this.hpMax = hpMax;
-        this.mp = mpMax;
-        this.mpMax = mpMax;
-        this.ap = apMax;
-        this.apMax = apMax;
-        hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
-        effectList = new ArrayList<>(); //generates array list that will store our status effects
+        super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax); //passes everything to the GenericUnit constructor, hero exclusive variables should be added below
+        //hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
+        //effectList = new ArrayList<>(); //generates array list that will store our status effects
         //ends here
 
         this.currentJob = null;
@@ -84,11 +70,11 @@ public class Hero extends GenericUnit{
 
         this.equipmentStorage = new Equipment();
 
-        this.poisonRes = 5;
+        /*this.poisonRes = 5;
         this.cutRes = 5;
         this.pierceRes = 5;
         this.fireRes = 5;
-        this.iceRes = 5;
+        this.iceRes = 5;*/
 
         this.level = 1;
         this.exp = 0.0f;
@@ -104,8 +90,8 @@ public class Hero extends GenericUnit{
 
         // these are status stats that show how much health a hero has
         // heroes spend stamina and mana to use skills
-        this.hp = 100.0f;
-        this.mp = 100.0f;
+        //this.hp = 100.0f; //commented out by daniel, we will pass this info to the constructor
+        //this.mp = 100.0f;
         this.stamina = 100.0f;
 
         this.sneak = 5;
