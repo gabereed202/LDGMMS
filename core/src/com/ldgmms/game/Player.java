@@ -7,6 +7,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 
+// TODO: move this to the base unit class eventually so we can represent every units health color
+enum HealthColor {
+    GREEN,
+    YELLOW,
+    ORANGE,
+    RED
+}
+
 /**
  * Player class extends the Sprite class to gain access to valuable methods within the Sprite superclass,
  * and implements InputProcessor in order to easily access multiple forms of user-input.
@@ -21,6 +29,7 @@ public class Player extends Sprite implements InputProcessor {
     protected boolean isScreenHex;              // used to tell what kind of screen the player is currently on
     private boolean debugFlag = true;           // useful for testing
     private boolean isOffset = true;            // helpful for moving on hex maps (not a fan, but it works)
+    private boolean isAlive = true;
 
     /**
      * Constructor for a new Player object.
@@ -30,11 +39,49 @@ public class Player extends Sprite implements InputProcessor {
     public Player(Sprite sprite) {
         super(sprite);
         isScreenHex = false;
+        hp = 100;
+        healthColor = HealthColor.GREEN;
     }
 
+
+    // just for white-box testing assignment
+    private int hp;
+    private HealthColor healthColor;
     // empty player for testing
     public Player() {
         isScreenHex = false;
+        hp = 100;
+        healthColor = HealthColor.GREEN;
+    }
+
+    public int getHP() {
+        return this.hp;
+    }
+
+    public void setHP(int hp) {
+        this.hp = hp;
+
+        if (hp == 0) {
+            setAlive(false);
+        }
+
+        if (hp >= 75) {
+            setHealthColor(HealthColor.GREEN);
+        } else if (hp < 75 && hp >= 50) {
+            setHealthColor(HealthColor.YELLOW);
+        } else if (hp < 50 && hp >= 25) {
+            setHealthColor(HealthColor.ORANGE);
+        } else if (hp < 25) {
+            setHealthColor(HealthColor.RED);
+        }
+    }
+
+    public HealthColor getHealthColor() {
+        return healthColor;
+    }
+
+    public void setHealthColor(HealthColor healthColor) {
+        this.healthColor = healthColor;
     }
 
     /**
@@ -197,6 +244,11 @@ public class Player extends Sprite implements InputProcessor {
             }
         } else { // currently on a square map
             switch (keycode) {
+                /* For testing HP */
+                // TODO: Remove this once we can test damage from game inputs
+                case Input.Keys.SPACE:
+                    setHP(getHP() - 10);
+                    break;
                 case Input.Keys.UP:
                     if (!isCellBlocked(getX(), getY() + getHeight())) {
                         setY(getY() + collisionLayer.getTileHeight() - 8);
@@ -314,5 +366,14 @@ public class Player extends Sprite implements InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setAlive(boolean alive) {
+        isAlive = alive;
     }
 }
