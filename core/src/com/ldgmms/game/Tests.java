@@ -10,7 +10,7 @@ public class Tests {
     @Test
     public void testCharacterHasNoJob(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         assertEquals(hero.job, -1);
         assertFalse(hero.job == 2);
@@ -20,7 +20,7 @@ public class Tests {
     @Test
     public void testCharacterJobAssignment(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         hero.equipmentStorage.addEquipment(1, "test", 2, 2);
 
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
@@ -32,7 +32,7 @@ public class Tests {
     @Test
     public void testCharacterJobAssignmentIncorrect(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         hero.equipmentStorage.addEquipment(1, "test", 2, 2);
 
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
@@ -44,7 +44,7 @@ public class Tests {
     @Test
     public void testNewMoveset(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         hero.equipmentStorage.addEquipment(1, "test", 1, 2);
 
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
@@ -56,7 +56,7 @@ public class Tests {
     @Test
     public void testLevelUp(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
         hero.equipmentStorage.addEquipment(1, "test", 1, 2);
 
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
@@ -69,7 +69,7 @@ public class Tests {
     @Test
     public void testPickUpEquipment(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
         EquipmentData e = new EquipmentData(0, "test", 1, 1);
         hero.pickUpEquipment(e);
 
@@ -79,7 +79,7 @@ public class Tests {
     @Test
     public void testSpecialCombo(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
         hero.equipmentStorage.addEquipment(0, "test1", 3, 3);
         hero.equipmentStorage.addEquipment(1, "test2", 4, 4);
         hero.changeEquipment(0, hero.equipmentStorage.map.get(0));
@@ -91,7 +91,7 @@ public class Tests {
     @Test
     public void testNoLevel(){
         // acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
 
         assertEquals(hero.level, 1);
     }
@@ -99,7 +99,7 @@ public class Tests {
     @Test
     public void testAttributeGain(){
         //acceptance test
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
         hero.gainExp(500.0f);
 
         assertEquals(hero.hp, 120.0f, 0.0f);
@@ -110,7 +110,7 @@ public class Tests {
     @Test
     public void testNewSkillEntry(){
         // integration test, bottom up approach
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
         SkillData newSkill = new SkillData(11, "test", 1, 1, 1);
         hero.baseSkills.map.put(newSkill.getKey(), newSkill);
 
@@ -120,7 +120,7 @@ public class Tests {
     @Test
     public void testBranchTrue(){
         // along with testBranchFalse this achieves full branch coverage
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
 
         hero.level = 10;
 
@@ -131,7 +131,7 @@ public class Tests {
     @Test
     public void testBranchFalse(){
         // along with testBranchTrue this achieves full branch coverage
-        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20);
+        Hero hero = new Hero(null, "test", 0, 0, 0, 0, 0, 0, 100, 100, 20, 0);
 
         hero.level = 0;
 

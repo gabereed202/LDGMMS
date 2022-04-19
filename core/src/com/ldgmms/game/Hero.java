@@ -3,6 +3,8 @@ package com.ldgmms.game;
 import java.util.ArrayList;
 
 public class Hero extends GenericUnit{
+    //list below added by daniel fuchs in order to store units
+    ArrayList<GenericUnit> unitList;
 
     // experience stats
     float exp;
@@ -54,9 +56,9 @@ public class Hero extends GenericUnit{
     // Skills[] skills;
 
 
-    public Hero(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax){
+    public Hero(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax, int team){
         //inserted by Daniel for now
-        super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax); //passes everything to the GenericUnit constructor, hero exclusive variables should be added below
+        super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax, team); //passes everything to the GenericUnit constructor, hero exclusive variables should be added below
         //hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
         //effectList = new ArrayList<>(); //generates array list that will store our status effects
         //ends here

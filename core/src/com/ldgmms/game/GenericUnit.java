@@ -9,13 +9,14 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     float hp, hpBonus, hpMax;          //player life
     float mp, mpBonus, mpMax;          //mana points
     int ap, apBonus, apMax;          //action points (movement points)
+    int team;                       //which team the unit is on (team 0, team 1, team 2, etc)
     String spritePath;
     String name;
 
     ArrayList<StatusEffect.Effect> effectList;
 
 
-    public GenericUnit(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax) { //constructor for our generic unit
+    public GenericUnit(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax, int team) { //constructor for our generic unit
         this.spritePath = spritePath;
         this.name = name;
         this.cutRes = cutRes;
@@ -30,6 +31,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
         this.mpMax = mpMax;
         this.ap = apMax;
         this.apMax = apMax;
+        this.team = team;
         hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
         effectList = new ArrayList<>(); //generates array list that will store our status effects
     }
@@ -41,6 +43,10 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
             e.apply(this); //should apply every damage effect in the list
         }
         effectList.removeIf(e->e.finished(this));
+
+    }
+    boolean deployUnit(int x, int y){ //decide whether or not to implement here or in a gamescreen and how
+        return true;
 
     }
 

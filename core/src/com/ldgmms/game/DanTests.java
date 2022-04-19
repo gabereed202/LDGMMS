@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class DanTests {
     @Test
     public void TestFireResCaseSingle(){ //black box test, functional coverage
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistFire newEffect = new DamTypes.ResistFire();
         newEffect.applyDamageEffect(u, 10, 2);
         u.update();
@@ -19,7 +19,7 @@ public class DanTests {
     }
     @Test
     public void TestFireResCaseMultiple(){ //white box test, achieves branch coverage as all potential branches in the Effect class FireRes are tested
-        GenericUnit u = new GenericUnit(null, "test", 10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test", 10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistFire newEffect = new DamTypes.ResistFire();
         newEffect.applyDamageEffect(u, 10, 5);
         u.update();
@@ -34,7 +34,7 @@ public class DanTests {
 
     @Test
     public void TestIceResCaseSingle(){ //black box test, functional coverage
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistIce newEffect = new DamTypes.ResistIce();
         newEffect.applyDamageEffect(u, 10, 2);
         u.update();
@@ -45,7 +45,7 @@ public class DanTests {
     }
     @Test
     public void TestIceResCaseMultiple(){//white box test, achieves branch coverage as all potential branches in the Effect class FireRes are tested
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistIce newEffect = new DamTypes.ResistIce();
         newEffect.applyDamageEffect(u, 10, 5);
         u.update();
@@ -60,7 +60,7 @@ public class DanTests {
     }
     @Test
     public void TestPhysResCaseSingle(){ //black box test, statement coverage
-        GenericUnit u = new GenericUnit( null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit( null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistPhys newEffect = new DamTypes.ResistPhys();
         newEffect.applyDamageEffect(u, 10, 2);
         u.update();
@@ -73,7 +73,7 @@ public class DanTests {
     }
     @Test
     public void TestPhysResCaseMultiple(){ //white box test, achieves branch coverage as all potential branches in the Effect class PhysRes are tested
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistPhys newEffect = new DamTypes.ResistPhys();
         newEffect.applyDamageEffect(u, 10, 5);
         u.update();
@@ -89,7 +89,7 @@ public class DanTests {
     }
     @Test
     public void TestPoisonResCaseSingle(){ //black box test, functional coverage
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistPoison newEffect = new DamTypes.ResistPoison();
         newEffect.applyDamageEffect(u, 10, 2);
         u.update();
@@ -100,7 +100,7 @@ public class DanTests {
     }
     @Test
     public void TestPoisonResCaseMultiple(){ //white box test, achieves branch coverage as all potential branches in the Effect class PoisonRes are tested
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistPoison newEffect = new DamTypes.ResistPoison();
         newEffect.applyDamageEffect(u, 10, 5);
         u.update();
@@ -114,7 +114,7 @@ public class DanTests {
     }
     @Test
     public void TestCutDamageNoProcMinDam(){ //white box test, function coverage with TestCutDamageProcRegDam (not statement because applyDamage not tested)
-        GenericUnit u = new GenericUnit(null, "test", 100, 100, 100, 100, 100, 100, 100, 100, 100); //high to ensure no status effect will be created as a result of damage
+        GenericUnit u = new GenericUnit(null, "test", 100, 100, 100, 100, 100, 100, 100, 100, 100, 0); //high to ensure no status effect will be created as a result of damage
         DamTypes.CutDamage newEffect = new DamTypes.CutDamage();
         newEffect.applyDamageEffect(u, 1, 5); //magnitude of 1 so minimum damage will be 5
         u.update();
@@ -122,7 +122,7 @@ public class DanTests {
     }
     @Test
     public void TestCutDamageProcRegDam(){ //case where status effect occurs and regular damage occurs
-        GenericUnit u = new GenericUnit(null, "test",25, 100, 100, 100, 100, 100, 100, 100, 100); //cutRes set to 25
+        GenericUnit u = new GenericUnit(null, "test",25, 100, 100, 100, 100, 100, 100, 100, 100, 0); //cutRes set to 25
         DamTypes.CutDamage newEffect = new DamTypes.CutDamage();
         newEffect.applyDamageEffect(u, 25, 5); // check against res is currently 25d3 so guarantee of status effect occurring
         u.update();
@@ -130,7 +130,7 @@ public class DanTests {
     }
     @Test
     public void TestSlowResCaseSingle(){ //black box test, statement coverage that ensures effect gets added and removed correctly
-        GenericUnit u = new GenericUnit(null, "test", 10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test", 10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistSlow newEffect = new DamTypes.ResistSlow();
         newEffect.applyDamageEffect(u, 10, 2);
         u.update();
@@ -141,7 +141,7 @@ public class DanTests {
     }
     @Test
     public void TestSlowResCaseMultiple(){//white box test, statement coverage
-        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10);
+        GenericUnit u = new GenericUnit(null, "test",10, 10, 10, 10, 10, 10, 10, 10, 10, 0);
         DamTypes.ResistSlow newEffect = new DamTypes.ResistSlow();
         newEffect.applyDamageEffect(u, 10, 5);
         u.update();
@@ -152,7 +152,7 @@ public class DanTests {
     }
     @Test
     public void TestAllResAdded(){//integration test, ensuring no resistances affect each other (some were incorrectly written before), statement coverage
-        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,10,0,10);
+        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,10,0,10, 0);
         DamTypes.ResistFire fireResEffect = new DamTypes.ResistFire();
         DamTypes.ResistIce iceResEffect = new DamTypes.ResistIce();
         DamTypes.ResistPhys physResEffect = new DamTypes.ResistPhys();
@@ -181,7 +181,7 @@ public class DanTests {
     }
     @Test
     public void TestHealAfterPierceDMG(){ //white box test, statement coverage because multiple heals branch not tested
-        GenericUnit u = new GenericUnit(null, "test",100,100,100,100,100,100,100,0,10);
+        GenericUnit u = new GenericUnit(null, "test",100,100,100,100,100,100,100,0,10, 0);
         DamTypes.PierceDamage damEffect = new DamTypes.PierceDamage();
         damEffect.applyDamage(u, 20);
         assertEquals(95, u.getHp(), 0);
@@ -195,7 +195,7 @@ public class DanTests {
     }
     @Test
     public void TestHealWhenFull(){ //white box test, provides statement coverage
-        GenericUnit u = new GenericUnit(null, "test",100,100,100,100,100,100,100,0,10);
+        GenericUnit u = new GenericUnit(null, "test",100,100,100,100,100,100,100,0,10, 0);
         DamTypes.Heal healEffect = new DamTypes.Heal();
         healEffect.applyDamageEffect(u, 500, 1);
         u.update();
@@ -203,7 +203,7 @@ public class DanTests {
     }
     @Test
     public void TestKillUnit(){ //white box test, provides function coverage (applyDamage statement not ran)
-        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,100,0,10);
+        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,100,0,10, 0);
         DamTypes.CutDamage damEffect = new DamTypes.CutDamage();
         damEffect.applyDamageEffect(u, 500, 1);
         u.update();
@@ -212,7 +212,7 @@ public class DanTests {
     @Test //this is an integration test that is top down, as I tested the DamTypes methods which then call the StatusEffect methods, provides statement coverage (applyDamage not tested)
     public void TestFireResThenFireDam(){ //gives unit resistance, applies damage less than enough to generate effect, applies enough damage to generate status effect
         MathUtils.random.setSeed(1);
-        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,100,0,10);
+        GenericUnit u = new GenericUnit(null, "test",0,0,0,0,0,0,100,0,10, 0);
         DamTypes.ResistFire resEffect = new DamTypes.ResistFire();
         resEffect.applyDamageEffect(u, 100, 10);
         u.update();
@@ -224,5 +224,16 @@ public class DanTests {
         u.update();
         assertEquals(2, u.effectList.size()); //Burn effect added
         //System.out.print(u.getHp());
+    }
+
+    @Test
+    public void TestMovingUnitsToSquareMap(){
+        Hero h = new Hero(null, "firsthero", 0, 0, 0, 0, 0, 0, 100, 0, 20, 0);
+        h.unitList.add(new GenericUnit(null, "test1",0,0,0,0,0,0,100,0,10, 0));
+        h.unitList.add(new GenericUnit(null, "test2",0,0,0,0,0,0,100,0,10, 0));
+        Hero e = new Hero(null, "secondhero", 0, 0, 0, 0, 0, 0, 100, 0, 20, 1);
+        e.unitList.add(new GenericUnit(null, "test1",0,0,0,0,0,0,100,0,10, 0));
+        e.unitList.add(new GenericUnit(null, "test2",0,0,0,0,0,0,100,0,10, 0));
+
     }
 }
