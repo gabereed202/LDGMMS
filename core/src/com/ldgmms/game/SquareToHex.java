@@ -1,4 +1,4 @@
-package com.ldgmms.game;
+/*package com.ldgmms.game;
 
 import java.util.ArrayList;
 
@@ -12,3 +12,4 @@ public class SquareToHex {
         return allUnits; //pass this to the turn logic?
     }
 }
+*/

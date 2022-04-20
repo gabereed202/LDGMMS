@@ -13,7 +13,7 @@ import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class HexScreen implements Screen {
+public class HexScreen implements Screen { //pass two heroes here --Daniel
     private final TBDGame game;                     // reference to our game
     private TiledMap map;                           // this screen's map
     private HexagonalTiledMapRenderer renderer;     // hexagonal renderer
