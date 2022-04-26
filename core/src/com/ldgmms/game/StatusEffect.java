@@ -212,7 +212,7 @@ public class StatusEffect {
             turnsRemaining = turns;
         }
         @Override public void apply(GenericUnit u){
-            u.setHp(u.hp + (int) magnitude); //unit is healed, should correct itself to maxHP in the setHp method
+            u.setHp((float)Math.ceil(u.hp + magnitude)); //unit is healed, should correct itself to maxHP in the setHp method
             turnsRemaining--;
 
         }

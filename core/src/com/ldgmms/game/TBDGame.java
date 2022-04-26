@@ -12,6 +12,7 @@ public class TBDGame extends Game {
 
 	@Override
 	public void create () {
+		UnitParser.loadFile(); //added for testing -Dan
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		player = new Player(new Sprite(new Texture("rogueSprite-simple.png")));
