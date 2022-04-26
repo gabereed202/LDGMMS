@@ -1,0 +1,31 @@
+{
+    "units":
+    [
+        {
+        "spritePath": "null",
+        "name": "Swordsman",
+        "cutRes": 5,
+        "pierceRes": 5,
+        "poisonRes": 5,
+        "iceRes": 5,
+        "fireRes": 5,
+        "slowRes": 5,
+        "hpMax": 20,
+        "mpMax": 0,
+        "apMax": 4
+        },
+        {
+        "spritePath": "null",
+        "name": "Axeman",
+        "cutRes": 5,
+        "pierceRes": 5,
+        "poisonRes": 5,
+        "iceRes": 5,
+        "fireRes": 5,
+        "slowRes": 5,
+        "hpMax": 20,
+        "mpMax": 0,
+        "apMax": 4
+        }
+    ]
+}

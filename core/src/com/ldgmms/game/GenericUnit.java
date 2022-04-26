@@ -50,12 +50,6 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
 
     }
 
-    /*void removeFinishedEffects() { //merge into update
-        //if effect returns that no turns are remaining, remove it from the array list
-        effectList.removeIf(e->e.finished(this)); //need to add reference to this unit for classes where we mess with stat bonuses
-
-    }*/
-
     public ArrayList<StatusEffect.Effect> getEffectList() {
         return effectList;
     }

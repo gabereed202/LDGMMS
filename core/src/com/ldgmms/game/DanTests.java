@@ -223,7 +223,6 @@ public class DanTests {
         damEffect.applyDamageEffect(u, 30, 5);
         u.update();
         assertEquals(2, u.effectList.size()); //Burn effect added
-        //System.out.print(u.getHp());
     }
 
     @Test
@@ -234,6 +233,10 @@ public class DanTests {
         Hero e = new Hero(null, "secondhero", 0, 0, 0, 0, 0, 0, 100, 0, 20, 1);
         e.unitList.add(new GenericUnit(null, "test1",0,0,0,0,0,0,100,0,10, 0));
         e.unitList.add(new GenericUnit(null, "test2",0,0,0,0,0,0,100,0,10, 0));
-
+    }
+    @Test
+    public void TestJsonParsing(){
+        //DesktopLauncher.main();
+        //UnitParser.loadFile();
     }
 }
