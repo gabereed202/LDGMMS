@@ -1,4 +1,4 @@
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
 dependencies {
     implementation 'org.testng:testng:6.9.6'
 }
