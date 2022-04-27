@@ -31,6 +31,11 @@ public class EditorScreen implements Screen {
     private TextButton.TextButtonStyle style_quit, style_square, style_hex;
     private TextButton btn_quit, btn_square, btn_hex;
 
+    private void navigate(Screen newScreen) {
+        game.setScreen(newScreen);
+        dispose();
+    }
+
     /** @see ApplicationListener#dispose */
     @Override
     public void dispose() {
@@ -63,19 +68,13 @@ public class EditorScreen implements Screen {
         stage.act(delta);
         stage.draw();
 
-        // User input
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareEditor(game, player, width, height));
-            dispose();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            game.setScreen(new HexScreen(game, player, width, height)); // TODO: replace with hexagonal map editor
-            dispose();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            game.setScreen(new MainMenuScreen(game, player, width, height));
-            dispose();
-        }
+        // User input (Refactor)
+        if (Gdx.input.isKeyPressed(Input.Keys.S))
+            navigate(new SquareEditor(game, player, width, height));
+        if (Gdx.input.isKeyPressed(Input.Keys.H))
+            navigate(new HexScreen(game, player, width, height)); // TODO: replace with hexagonal map editor
+        if (Gdx.input.isKeyPressed(Input.Keys.Q))
+            navigate(new MainMenuScreen(game, player, width, height));
     }
 
     /**
@@ -92,6 +91,8 @@ public class EditorScreen implements Screen {
 
         // Update things for rendering
         viewport.update(width, height);
+        camera.position.x = width / 2.0f; // Refactor (added 2 lines)
+        camera.position.y = height / 2.0f;
         camera.update();
 
         // Reposition UI elements
@@ -121,19 +122,15 @@ public class EditorScreen implements Screen {
         btn_quit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked quit button.");
-                game.setScreen(new MainMenuScreen(game, player, width, height));
-                dispose();
+                navigate(new MainMenuScreen(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_quit.fontColor = Color.BLUE;
-                System.out.println("Hovering over quit button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_quit.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over quit button.");
             }
         });
         stage.addActor(btn_quit);
@@ -146,19 +143,15 @@ public class EditorScreen implements Screen {
         btn_square.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked square button.");
-                game.setScreen(new SquareEditor(game, player, width, height));
-                dispose();
+                navigate(new SquareEditor(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_square.fontColor = Color.BLUE;
-                System.out.println("Hovering over square button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_square.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over square button.");
             }
         });
         stage.addActor(btn_square);
@@ -171,19 +164,15 @@ public class EditorScreen implements Screen {
         btn_hex.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked hex button.");
-                game.setScreen(new HexScreen(game, player, width, height)); // TODO: HexEditor
-                dispose();
+                navigate(new HexScreen(game, player, width, height)); // Refactored TODO: HexEditor
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_hex.fontColor = Color.BLUE;
-                System.out.println("Hovering over hex button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_hex.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over hex button.");
             }
         });
         stage.addActor(btn_hex);

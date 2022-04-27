@@ -36,6 +36,11 @@ public class MainMenuScreen implements Screen {
     private TextButton.TextButtonStyle style_square, style_hex, style_editor;
     private TextButton btn_square, btn_hex, btn_editor;
 
+    private void navigate(Screen newScreen) {
+        game.setScreen(newScreen);
+        dispose();
+    }
+
     /**
      * Constructor for the MainMenuScreen.
      * -Sean
@@ -76,19 +81,15 @@ public class MainMenuScreen implements Screen {
         btn_square.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked square button.");
-                game.setScreen(new SquareScreen(game, player, width, height));
-                dispose();
+                navigate(new SquareScreen(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_square.fontColor = Color.BLUE;
-                System.out.println("Hovering over square button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_square.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over square button.");
             }
         });
         stage.addActor(btn_square);
@@ -101,19 +102,15 @@ public class MainMenuScreen implements Screen {
         btn_hex.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked hex button.");
-                game.setScreen(new HexScreen(game, player, width, height));
-                dispose();
+                navigate(new HexScreen(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_hex.fontColor = Color.BLUE;
-                System.out.println("Hovering over hex button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_hex.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over hex button.");
             }
         });
         stage.addActor(btn_hex);
@@ -126,19 +123,15 @@ public class MainMenuScreen implements Screen {
         btn_editor.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked editor button.");
-                game.setScreen(new EditorScreen(game, player, width, height));
-                dispose();
+                navigate(new EditorScreen(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_editor.fontColor = Color.BLUE;
-                System.out.println("Hovering over editor button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_editor.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over editor button.");
             }
         });
         stage.addActor(btn_editor);
@@ -164,18 +157,12 @@ public class MainMenuScreen implements Screen {
         stage.draw();
 
         // User input
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player, width, height));
-            dispose();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            game.setScreen(new HexScreen(game, player, width, height));
-            dispose();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            game.setScreen(new EditorScreen(game, player, width, height));
-            dispose();
-        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S))
+            navigate(new SquareScreen(game, player, width, height)); // Refactored
+        if (Gdx.input.isKeyPressed(Input.Keys.H))
+            navigate(new HexScreen(game, player, width, height)); // Refactored
+        if (Gdx.input.isKeyPressed(Input.Keys.E))
+            navigate(new EditorScreen(game, player, width, height)); // Refactored
     }
 
 
@@ -189,7 +176,6 @@ public class MainMenuScreen implements Screen {
         // Set local variables
         this.width = width;
         this.height = height;
-        System.out.println("New size: " + width + "x" + height);
 
         // Update things for rendering
         viewport.update(width, height);

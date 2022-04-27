@@ -40,6 +40,11 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
     private List<String> context_menu;*/
     private boolean ctxmenu_visible;
 
+    private void navigate(Screen newScreen) {
+        game.setScreen(newScreen);
+        dispose();
+    }
+
     private void toggleCtxMenu() {
         if (ctxmenu_visible) {
             //context_menu.remove();
@@ -48,8 +53,8 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         }
         else {
             //stage.addActor(context_menu);
-            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY()); // Move to mouse cursor
-            btn_ctxmenu_2.setPosition(btn_ctxmenu_1.getX(), btn_ctxmenu_1.getY() + btn_ctxmenu_2.getHeight()); // Move to below first button
+            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY() - btn_ctxmenu_1.getHeight()); // Move to mouse cursor - Refactored these two lines
+            btn_ctxmenu_2.setPosition(btn_ctxmenu_1.getX(), btn_ctxmenu_1.getY() - btn_ctxmenu_2.getHeight()); // Move to below first button
             stage.addActor(btn_ctxmenu_1);
             stage.addActor(btn_ctxmenu_2);
         }
@@ -80,7 +85,6 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         renderer.render();
         batch.begin();
         // Render game
-        //batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
         game.font.draw(batch, "TEST", 50, 50);
         // Render UI
         batch.setProjectionMatrix(ui_camera.combined);
@@ -89,8 +93,8 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         batch.end();
 
         // User input
-        if (Gdx.input.justTouched())
-            System.out.println("Received input at " + Gdx.input.getX() + "," + Gdx.input.getY());
+        /*if (Gdx.input.justTouched())
+            System.out.println("Received input at " + Gdx.input.getX() + "," + Gdx.input.getY());*/
         if (Gdx.input.isKeyPressed(Input.Keys.UP))
             game_camera.position.y -= 1;
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
@@ -99,6 +103,8 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             game_camera.position.x += 1;
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
             game_camera.position.x -= 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.M)) // Refactored (added)
+            navigate(new MainMenuScreen(game, player, width, height));
     }
 
     public void resize(int width, int height) {
@@ -116,9 +122,6 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         /*game_camera.viewportWidth = width;
         game_camera.viewportHeight = height;*/
         //game_viewport.update(width, height);
-
-        System.out.println("New size: " + width + "x" + height);
-        //System.out.println("UI Position: " + ui_camera.position.x + "," + ui_camera.position.y);
 
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
     }
@@ -152,7 +155,6 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 float dx = x - getDragStartX(), dy = y - getDragStartY();
-                System.out.println("RMB 2 dragged " + dx + "," + dy);
                 game_camera.translate(-dx, -dy, 0.0f);
                 setDragStartX(x);
                 setDragStartY(y);
@@ -169,19 +171,15 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         btn_quit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked button.");
-                game.setScreen(new MainMenuScreen(game, player, width, height));
-                dispose();
+                navigate(new MainMenuScreen(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_quit.fontColor = Color.BLUE;
-                System.out.println("Hovering over button.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_quit.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over button.");
             }
         });
         stage.addActor(btn_quit);
@@ -198,12 +196,10 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_ctxmenu_1.fontColor = Color.BLUE;
-                System.out.println("Hovering over menu button 1.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_ctxmenu_1.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over menu button 1.");
             }
         });
 
@@ -219,12 +215,10 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 style_ctxmenu_2.fontColor = Color.BLUE;
-                System.out.println("Hovering over menu button 2.");
             }
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 style_ctxmenu_2.fontColor = Color.SCARLET;
-                System.out.println("No longer hovering over menu button 2.");
             }
         });
 
