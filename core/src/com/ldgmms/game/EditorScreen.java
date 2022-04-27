@@ -72,7 +72,7 @@ public class EditorScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.S))
             navigate(new SquareEditor(game, player, width, height));
         if (Gdx.input.isKeyPressed(Input.Keys.H))
-            navigate(new HexScreen(game, player, width, height)); // TODO: replace with hexagonal map editor
+            navigate(new HexEditor(game, player, width, height));
         if (Gdx.input.isKeyPressed(Input.Keys.Q))
             navigate(new MainMenuScreen(game, player, width, height));
     }
@@ -164,7 +164,7 @@ public class EditorScreen implements Screen {
         btn_hex.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                navigate(new HexScreen(game, player, width, height)); // Refactored TODO: HexEditor
+                navigate(new HexEditor(game, player, width, height)); // Refactored
             }
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {

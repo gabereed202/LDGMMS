@@ -8,40 +8,38 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-//import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-//import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class SquareEditor implements Screen /*implements InputProcessor*/ {
+public class HexEditor implements Screen /*implements InputProcessor*/ {
     // Constants
     private static final float camera_movement_speed = 60.0f;
 
+    // Instance constants
     private final TBDGame game;
     private final Player player; // Unused by this class
     private final OrthographicCamera ui_camera;
     private final OrthographicCamera game_camera;
-    private final ScreenViewport ui_viewport;
+    private final ScreenViewport ui_viewport; // Allows the game graphics/camera to be moved around separate from the actual window
     private final FitViewport game_viewport;
     private final TiledMap map;
-    private final OrthogonalTiledMapRenderer renderer;
+    private final HexagonalTiledMapRenderer renderer;
 
+    // Instances variables
     private int width, height;
     private Stage stage;
     private TextButton.TextButtonStyle style_quit, style_ctxmenu_1, style_ctxmenu_2;
     private TextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
-    /*private List.ListStyle style_ctx_menu;
-    private List<String> context_menu;*/
     private boolean ctxmenu_visible;
     private float game_camera_dx = 0.0f; // Camera speed, horizontal
     private float game_camera_dy = 0.0f; // Camera speed, vertical
@@ -53,13 +51,11 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
 
     private void toggleCtxMenu() {
         if (ctxmenu_visible) {
-            //context_menu.remove();
             btn_ctxmenu_1.remove();
             btn_ctxmenu_2.remove();
         }
         else {
-            //stage.addActor(context_menu);
-            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY() - btn_ctxmenu_1.getHeight()); // Move to mouse cursor - Refactored these two lines
+            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY() - btn_ctxmenu_1.getHeight()); // Move to mouse cursor
             btn_ctxmenu_2.setPosition(btn_ctxmenu_1.getX(), btn_ctxmenu_1.getY() - btn_ctxmenu_2.getHeight()); // Move to below first button
             stage.addActor(btn_ctxmenu_1);
             stage.addActor(btn_ctxmenu_2);
@@ -79,14 +75,13 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
     public void pause() { }
 
     public void render(float delta) {
-        ScreenUtils.clear(0, 0, 0, 1); // Set screen black
+        ScreenUtils.clear(0, 0, 0.2f, 1);
 
         // Update camera
         game_camera.position.x += game_camera_dx * delta * game_camera.zoom;
         game_camera.position.y += game_camera_dy * delta * game_camera.zoom;
         game_camera.update();
 
-        //Batch batch = game.batch;
         Batch batch = renderer.getBatch();
 
         // Rendering tasks
@@ -100,25 +95,25 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         stage.act(delta);
         stage.draw();
         batch.end();
-
-        // User input
-        /*if (Gdx.input.justTouched())
-            System.out.println("Received input at " + Gdx.input.getX() + "," + Gdx.input.getY());*/
     }
 
     public void resize(int width, int height) {
+        // Update local variables
         this.width = width;
         this.height = height;
 
+        // Update UI
         ui_viewport.update(width, height);
         ui_camera.position.x = width / 2.0f;
         ui_camera.position.y = height / 2.0f;
         ui_camera.update(); // Update matrices
 
+        // Update game display while maintaining its position relative to the window
         Vector3 pos = game_camera.position.cpy();
         game_camera.setToOrtho(false, width, height);
         game_camera.position.set(pos);
 
+        // Update UI elements
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
     }
 
@@ -128,7 +123,7 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
         renderer.setView(game_camera);
 
         stage = new Stage(ui_viewport, game.batch);
-        Gdx.input.setInputProcessor(stage); //Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(stage);
         stage.addListener(new ClickListener(Input.Buttons.RIGHT) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -218,9 +213,9 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             }
         });
 
-        style_quit = new TextButton.TextButtonStyle(); //default_button_style.font = new BitmapFont();
+        style_quit = new TextButton.TextButtonStyle();
         style_quit.font = game.font;
-        style_quit.fontColor = Color.SCARLET; //default_button_style.fontColor = Color.WHITE;
+        style_quit.fontColor = Color.SCARLET;
         btn_quit = new TextButton("Main Menu", style_quit); // TODO: set graphic?
         btn_quit.setPosition(0.0f, 768.0f);
         btn_quit.addListener(new ClickListener() {
@@ -277,40 +272,22 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
             }
         });
 
-        /*style_ctx_menu = new List.ListStyle(game.font, Color.BLUE, Color.SCARLET, new BaseDrawable());
-        style_ctx_menu.selection.setMinWidth(10.0f);
-        style_ctx_menu.selection.setMinHeight(10.0f);
-        context_menu = new List<String>(style_ctx_menu);
-        context_menu.setPosition(100, 100);
-        context_menu.setItems(new String[]{ "Thing 1", "Thing 2" });
-        context_menu.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (isOver()) {
-                    System.out.println("User clicked menu option " + context_menu.getItemIndexAt(y));
-                }
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                int index = context_menu.getItemIndexAt(y);
-                System.out.println("Over index " + index);
-                context_menu.setSelectedIndex(index);
-            }
-        });*/
         ctxmenu_visible = false;
     }
 
-    public SquareEditor(TBDGame game, Player player, int width, int height) {
+    public HexEditor(TBDGame game, Player player, int width, int height) {
         this.game = game;
         this.player = player;
         ui_camera = new OrthographicCamera(width, height);
         ui_viewport = new ScreenViewport(ui_camera);
-        game_camera = new OrthographicCamera(2048, 1536);
-        game_viewport = new FitViewport(2048, 1536, game_camera);
-        map = new TmxMapLoader().load("map_squareMap.tmx"); // TODO: should not load a map, but create a fresh one!
-        renderer = new OrthogonalTiledMapRenderer(map);
+        game_camera = new OrthographicCamera(1056, 784);
+        game_viewport = new FitViewport(1056, 784, game_camera);
+        map = new TmxMapLoader().load("map_hexMap.tmx"); // TODO: should not load a map, but create a fresh one!
+        renderer = new HexagonalTiledMapRenderer(map);
 
+        // Set private fields
         this.width = width;
         this.height = height;
     }
 }
+

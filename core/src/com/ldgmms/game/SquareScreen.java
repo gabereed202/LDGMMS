@@ -112,7 +112,21 @@ public class SquareScreen implements Screen {
             }
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                return player.keyDown(keycode);
+                boolean res = player.keyDown(keycode);
+                // TODO: find a better way to handle this inside the Player class without magic numbers
+                // make sure player stays within screen bounds - x
+                float x = player.getX();
+                if (x < 0)
+                    player.setX(0);
+                else if (x > 1024 - 32)
+                    player.setX(1024 - 32);
+                // "" - y
+                float y = player.getY();
+                if (y < 0)
+                    player.setY(0);
+                else if (y > 768 - 32)
+                    player.setY(768 - 32);
+                return res;
             }
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
@@ -134,20 +148,9 @@ public class SquareScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
-        game_camera.update(); // Matthew Rease
-
-        // make sure player stays within screen bounds
-        // TODO: find a better way to handle this inside the Player class without magic numbers
-        if (player.getX() < 0)
-            player.setX(0);
-        if (player.getX() > 1024 - 32)
-            player.setX(1024 - 32);
-        if (player.getY() < 0)
-            player.setY(0);
-        if (player.getY() > 768 - 32)
-            player.setY(768 - 32);
-
         // From here until user input by Matthew Rease
+        game_camera.update();
+
         Batch batch = renderer.getBatch();
 
         // Rendering tasks

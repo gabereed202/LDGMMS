@@ -114,7 +114,21 @@ public class HexScreen implements Screen {
             }
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                return player.keyDown(keycode);
+                boolean res = player.keyDown(keycode);
+                // TODO: find a better way to do this inside the Player class
+                // make sure player stays within screen bounds - x
+                float x = player.getX();
+                if (x < 0)
+                    player.setX(0);
+                else if (x > 528 - 32)
+                    player.setX(528 - 32);
+                // "" - y
+                float y = player.getY();
+                if (y < 0)
+                    player.setY(0);
+                else if (y > 392 - 32)
+                    player.setY(392 - 32);
+                return res;
             }
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
@@ -136,20 +150,9 @@ public class HexScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
 
+        // From here until user input by Matthew Rease
         game_camera.update();
 
-        // make sure the player stays within screen bounds
-        // TODO: find a better way to do this inside the Player class
-        if (player.getX() < 0)
-            player.setX(0);
-        if (player.getX() > 528 - 32)
-            player.setX(528 - 32);
-        if (player.getY() < 0)
-            player.setY(0);
-        if (player.getY() > 392 - 32)
-            player.setY(392 - 32);
-
-        // From here until user input by Matthew Rease
         Batch batch = renderer.getBatch();
 
         // Rendering tasks
