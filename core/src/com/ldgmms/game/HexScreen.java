@@ -6,22 +6,33 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class HexScreen implements Screen {
     private final TBDGame game;
     private final Player player;
-    private final OrthographicCamera camera;
-    private final FitViewport viewport; // used for scaling the game as the window dynamically resizes
+    private final OrthographicCamera ui_camera; // Matthew Rease
+    private final OrthographicCamera game_camera;
+    private final ScreenViewport ui_viewport; // Allows the game graphics/camera to be moved around separate from the actual window (Matthew Rease)
+    private final FitViewport game_viewport; // used for scaling the game as the window dynamically resizes
     private final TiledMap map;
     private final HexagonalTiledMapRenderer renderer;
 
-    private int width, height; // Matthew Rease
+    // Matthew Rease
+    private int width, height;
+    private Stage stage;
 
     /**
      * Constructor for a new HexScreen to represent a map with a hex-based grid.
@@ -32,9 +43,10 @@ public class HexScreen implements Screen {
     public HexScreen(TBDGame game, Player player, int width, int height) {
         this.game = game;
         this.player = player;
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, 528, 392);
-        viewport = new FitViewport(528, 392, camera);
+        ui_camera = new OrthographicCamera(width, height); // Matthew Rease
+        ui_viewport = new ScreenViewport(ui_camera); // Matthew Rease
+        game_camera = new OrthographicCamera(1056, 784); // Matthew Rease
+        game_viewport = new FitViewport(1056, 784, game_camera);
         map = new TmxMapLoader().load("map_hexMap.tmx");
         renderer = new HexagonalTiledMapRenderer(map);
 
@@ -55,9 +67,64 @@ public class HexScreen implements Screen {
      */
     @Override
     public void show() {
-        renderer.setView(camera);
+        // Matthew Rease
+        renderer.setView(game_camera);
+        game_camera.translate(320, 240, 0.0f); // Hack to get the bottom left corner of both cameras to line up lol
 
-        Gdx.input.setInputProcessor(player);
+        // Matthew Rease
+        stage = new Stage(ui_viewport, game.batch);
+        Gdx.input.setInputProcessor(stage);
+        stage.addListener(new DragListener() {
+            @Override
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                System.out.println("RMB 1 dragged " + x + "," + y);
+            }
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button != Input.Buttons.RIGHT)
+                    return false;
+                setDragStartX(x);
+                setDragStartY(y);
+                return true;
+            }
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                float dx = x - getDragStartX(), dy = y - getDragStartY();
+                game_camera.translate(-dx * game_camera.zoom, -dy * game_camera.zoom, 0.0f);
+                setDragStartX(x);
+                setDragStartY(y);
+            }
+        });
+        // Can't use player as InputProcessor unless drag events are added to it, and it is made aware of the game's camera
+        //Gdx.input.setInputProcessor(player);
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
+                if (amountY == 0)
+                    return false;
+                float old = game_camera.zoom;
+                if (amountY > 0)
+                    game_camera.zoom *= amountY * 1.5;
+                else
+                    game_camera.zoom /= amountY * -1.5;
+                // Failsafe so we don't try dividing by zero... (would only happen when dividing the zoom value to a point beyond what a float's precision allows)
+                if (game_camera.zoom == 0)
+                    game_camera.zoom = old;
+                return true;
+            }
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                return player.keyDown(keycode);
+            }
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                return player.keyUp(keycode);
+            }
+            @Override
+            public boolean keyTyped(InputEvent event, char character) {
+                return player.keyTyped(character);
+            }
+        });
     }
 
     /**
@@ -68,7 +135,8 @@ public class HexScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-        renderer.render();
+
+        game_camera.update();
 
         // make sure the player stays within screen bounds
         // TODO: find a better way to do this inside the Player class
@@ -81,9 +149,21 @@ public class HexScreen implements Screen {
         if (player.getY() > 392 - 32)
             player.setY(392 - 32);
 
-        renderer.getBatch().begin();
-        player.draw(renderer.getBatch());
-        renderer.getBatch().end();
+        // From here until user input by Matthew Rease
+        Batch batch = renderer.getBatch();
+
+        // Rendering tasks
+        batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
+        renderer.render();
+        batch.begin();
+        // Render game
+        //game.font.draw(batch, "TEST", 50, 50);
+        player.draw(batch);
+        // Render UI
+        batch.setProjectionMatrix(ui_camera.combined);
+        stage.act(delta);
+        stage.draw();
+        batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             game.setScreen(new SquareScreen(game, player, width, height));
@@ -102,11 +182,16 @@ public class HexScreen implements Screen {
         this.width = width;
         this.height = height;
 
-        viewport.update(width, height);
-        camera.setToOrtho(false, 528, 392);
-        camera.position.x = 264; // 528 / 2
-        camera.position.y = 196; // 392 / 2
-        camera.update();
+        // Update UI - Matthew Rease
+        ui_viewport.update(width, height);
+        ui_camera.position.x = width / 2.0f;
+        ui_camera.position.y = height / 2.0f;
+        ui_camera.update(); // Update matrices
+
+        // Update game display while maintaining its position relative to the window - Matthew Rease
+        Vector3 pos = game_camera.position.cpy();
+        game_camera.setToOrtho(false, width, height);
+        game_camera.position.set(pos);
     }
 
     /**
@@ -138,6 +223,8 @@ public class HexScreen implements Screen {
      */
     @Override
     public void dispose() {
+        stage.dispose(); // Matthew Rease
+
         renderer.dispose();
         map.dispose();
     }

@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -160,6 +161,22 @@ public class SquareEditor implements Screen /*implements InputProcessor*/ {
                 setDragStartY(y);
                 if (ctxmenu_visible)
                     toggleCtxMenu();
+            }
+        });
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
+                if (amountY == 0)
+                    return false;
+                float old = game_camera.zoom;
+                if (amountY > 0)
+                    game_camera.zoom *= amountY * 1.5;
+                else
+                    game_camera.zoom /= amountY * -1.5;
+                // Failsafe so we don't try dividing by zero... (would only happen when dividing the zoom value to a point beyond what a float's precision allows)
+                if (game_camera.zoom == 0)
+                    game_camera.zoom = old;
+                return true;
             }
         });
 
