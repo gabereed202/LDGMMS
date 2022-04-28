@@ -11,23 +11,67 @@ import java.util.HashMap;
 
 public class UnitParser { //example usage: UnitParser.UnitObjectList buildableUnits = UnitParser.loadFile();
     public static class UnitObjectList{
-        private ArrayList<JsonUnit> units;
+        public ArrayList<JsonUnit> units;
         public UnitObjectList(){
             this.units = new ArrayList<>();
         }
     }
     public static class JsonUnit{ //no constructor needed with how libgdx json parser works
+        public String getSpritePath() {
+            return spritePath;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getCutRes() {
+            return cutRes;
+        }
+
+        public int getPierceRes() {
+            return pierceRes;
+        }
+
+        public int getPoisonRes() {
+            return poisonRes;
+        }
+
+        public int getIceRes() {
+            return iceRes;
+        }
+
+        public int getFireRes() {
+            return fireRes;
+        }
+
+        public int getSlowRes() {
+            return slowRes;
+        }
+
+        public float getHpMax() {
+            return hpMax;
+        }
+
+        public float getMpMax() {
+            return mpMax;
+        }
+
+        public int getApMax() {
+            return apMax;
+        }
+
         private String spritePath;
         private String name;
-        private float cutRes;
-        private float pierceRes;
-        private float poisonRes;
-        private float iceRes;
-        private float fireRes;
-        private float slowRes;
+        private int cutRes;
+        private int pierceRes;
+        private int poisonRes;
+        private int iceRes;
+        private int fireRes;
+        private int slowRes;
         private float hpMax;
         private float mpMax;
-        private float apMax;
+        private int apMax;
     }
     public static UnitObjectList loadFile() { //can add a list for heroes as well
         Json json = new Json();

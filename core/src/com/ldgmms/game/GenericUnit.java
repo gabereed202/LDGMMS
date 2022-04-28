@@ -16,7 +16,7 @@ public class GenericUnit { //GenericUnit written by Daniel Fuchs
     ArrayList<StatusEffect.Effect> effectList;
 
 
-    public GenericUnit(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, int hpMax, int mpMax, int apMax, int team) { //constructor for our generic unit
+    public GenericUnit(String spritePath, String name, int cutRes, int pierceRes, int poisonRes, int iceRes, int fireRes, int slowRes, float hpMax, float mpMax, int apMax, int team) { //constructor for our generic unit
         this.spritePath = spritePath;
         this.name = name;
         this.cutRes = cutRes;
