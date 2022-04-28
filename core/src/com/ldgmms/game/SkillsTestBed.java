@@ -2,7 +2,7 @@ package com.ldgmms.game;
 
 public class SkillsTestBed {
     public static void main(String[] args) {
-        Skills heroSkills = new Skills();
+        /*Skills heroSkills = new Skills();
         heroSkills.printSkills();
         heroSkills.addSkill("laser beam", 100, 100);
         if(heroSkills.hasSkillInFile("quick dash")) {
@@ -15,6 +15,6 @@ public class SkillsTestBed {
             System.out.println("success delete");
         }else{
             System.out.println("failed delete");
-        }
+        }*/
     }
 }

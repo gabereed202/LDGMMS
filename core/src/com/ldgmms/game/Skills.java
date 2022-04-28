@@ -79,7 +79,8 @@ public class Skills {
         return true; //string is bueno, and things can move on.
     }
 
-    private String skillDataToString(String skill_name){ //takes skill_name (the key) and turns that chunk of data into syntax correct string
+    //needs to be private, but public to do junit test
+    public String skillDataToString(String skill_name){ //takes skill_name (the key) and turns that chunk of data into syntax correct string
         String[] SkillDataStrings = new String[skillParameters]; //turn hashmap data into strings
         SkillDataStrings[0] = skill_name;
         SkillDataStrings[1] = String.valueOf(skillMap.get(skill_name).getDamage());
@@ -328,9 +329,11 @@ public class Skills {
     }
 
     public int modifyAllSkillValues(String value, String operation, double x) {
-        skillMap.entrySet().stream().forEach(e -> { //for each element in set of mappings in hashMap
+        /*skillMap.entrySet().stream().forEach(e -> { //for each element in set of mappings in hashMap
             modifySkillValues(e.getKey(), value, operation, x);
         });
+
+         */
         return 0; //success
     }
 
@@ -341,7 +344,8 @@ public class Skills {
         return orderedList;
     }
 
-    private boolean doesValueExist(String value){
+    //needs to be private, but public for now since junit tests
+    public boolean doesValueExist(String value){
         SkillData javaIsDumb = new SkillData("*ignore*", -1, -1);
         List<String> valueList = javaIsDumb.getValues();
         for (int i = 0; i < valueList.size(); i++) {
