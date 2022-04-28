@@ -32,6 +32,9 @@ public class SquareScreen implements Screen {
         this.player = game.player;
         player.isScreenHex = false;
         this.healthBar = new Texture("blank_bar.png");
+        //<<<Added by Daniel Fuchs
+        checkHeroes();
+        //>>>
     }
 
     /**
@@ -166,4 +169,14 @@ public class SquareScreen implements Screen {
         map.dispose();
         renderer.dispose();
     }
+    //<<<Added by Daniel Fuchs
+    private void checkHeroes(){
+        for(Hero h : game.liveHeroes){
+            if (h.getHp() == 0){
+                game.deadHeroes.add(h);
+                game.liveHeroes.remove(h);
+            }
+        }
+    }
+    //>>>
 }

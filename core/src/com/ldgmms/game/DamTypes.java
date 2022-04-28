@@ -3,8 +3,8 @@ package com.ldgmms.game;
 
 import com.badlogic.gdx.math.MathUtils;
 
-//make resistances a separate class that extends effect, move resistances to this class, store resistances in hashmap on unit
-//written by Daniel Fuchs NOTE: calculations for resistances not finalized, planning on moving to some sort of formula where magnitude will be modified based on resistance, then passed to damage or status effect
+
+//written by Daniel Fuchs
 public class DamTypes { //casting from float to int is lossless iff the magnitude of a float is less than 2^24
     interface DamageEffect{ //can result in a status effect occurring for a number of turns
         void applyDamageEffect(GenericUnit u, float magnitude, int duration); //duration not necessarily the damage itself but the duration of status effects, u is the target

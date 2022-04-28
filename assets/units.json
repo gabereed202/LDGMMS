@@ -1,0 +1,70 @@
+{
+    "units":
+    [
+        {
+            "spritePath": "null",
+            "name": "Swordsman",
+            "cutRes": 10,
+            "pierceRes": 5,
+            "poisonRes": 5,
+            "iceRes": 5,
+            "fireRes": 5,
+            "slowRes": 5,
+            "hpMax": 20,
+            "mpMax": 0,
+            "apMax": 4
+        },
+        {
+            "spritePath": "null",
+            "name": "Armored Swordsman",
+            "cutRes": 15,
+            "pierceRes": 5,
+            "poisonRes": 5,
+            "iceRes": 5,
+            "fireRes": 10,
+            "slowRes": 5,
+            "hpMax": 30,
+            "mpMax": 0,
+            "apMax": 4
+        },
+        {
+            "spritePath": "null",
+            "name": "Shaman",
+            "cutRes": 2,
+            "pierceRes": 2,
+            "poisonRes": 15,
+            "iceRes": 15,
+            "fireRes": 15,
+            "slowRes": 15,
+            "hpMax": 10,
+            "mpMax": 20,
+            "apMax": 2
+        },
+        {
+            "spritePath": "null",
+            "name": "Light Cavalry",
+            "cutRes": 8,
+            "pierceRes": 4,
+            "poisonRes": 5,
+            "iceRes": 5,
+            "fireRes": 5,
+            "slowRes": 5,
+            "hpMax": 20,
+            "mpMax": 0,
+            "apMax": 6
+        },
+        {
+            "spritePath": "null",
+            "name": "Heavy Cavalry",
+            "cutRes": 15,
+            "pierceRes": 5,
+            "poisonRes": 5,
+            "iceRes": 5,
+            "fireRes": 10,
+            "slowRes": 5,
+            "hpMax": 30,
+            "mpMax": 0,
+            "apMax": 4
+        }
+    ]
+}

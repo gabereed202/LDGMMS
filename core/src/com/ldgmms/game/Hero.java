@@ -60,7 +60,7 @@ public class Hero extends GenericUnit{
         //inserted by Daniel for now
         super(spritePath, name, cutRes, pierceRes, poisonRes, iceRes, fireRes, slowRes, hpMax, mpMax, apMax, team); //passes everything to the GenericUnit constructor, hero exclusive variables should be added below
         //hpBonus = mpBonus = apBonus = cutResBonus = pierceResBonus = poisonResBonus = iceResBonus = fireResBonus = slowResBonus = 0; //set all these bonuses to zero
-        //effectList = new ArrayList<>(); //generates array list that will store our status effects
+        unitList = new ArrayList<>(); //generates array list that will store our status effects
         //ends here
 
         this.currentJob = null;
