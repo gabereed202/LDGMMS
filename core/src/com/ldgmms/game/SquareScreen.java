@@ -112,21 +112,33 @@ public class SquareScreen implements Screen {
             }
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                boolean res = player.keyDown(keycode);
-                // TODO: find a better way to handle this inside the Player class without magic numbers
-                // make sure player stays within screen bounds - x
-                float x = player.getX();
-                if (x < 0)
-                    player.setX(0);
-                else if (x > 1024 - 32)
-                    player.setX(1024 - 32);
-                // "" - y
-                float y = player.getY();
-                if (y < 0)
-                    player.setY(0);
-                else if (y > 768 - 32)
-                    player.setY(768 - 32);
-                return res;
+                switch (keycode) {
+                    // when you switch to the hexMap,
+                    // grab the squareMap coordinates first so the player remembers where it was.
+                    case Input.Keys.H:
+                        player.setSquareX(player.getX());
+                        player.setSquareY(player.getY());
+                        game.setScreen(new HexScreen(game, player, width, height));
+                        dispose();
+                        return true;
+                    default:
+                        boolean res = player.keyDown(keycode);
+                        // TODO: find a better way to handle this inside the Player class without magic numbers
+                        // make sure player stays within screen bounds - x
+                        float x = player.getX();
+                        if (x < 0)
+                            player.setX(0);
+                        else if (x > 1024 - 32)
+                            player.setX(1024 - 32);
+                        // "" - y
+                        float y = player.getY();
+                        if (y < 0)
+                            player.setY(0);
+                        else if (y > 768 - 32)
+                            player.setY(768 - 32);
+                        return res;
+                }
+                //return false;
             }
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
@@ -165,15 +177,6 @@ public class SquareScreen implements Screen {
         stage.act(delta);
         stage.draw();
         batch.end();
-
-        // when you switch to the hexMap,
-        // grab the squareMap coordinates first so the player remembers where it was.
-        if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-            player.setSquareX(player.getX());
-            player.setSquareY(player.getY());
-            game.setScreen(new HexScreen(game, player, width, height));
-            dispose();
-        }
     }
 
     /**

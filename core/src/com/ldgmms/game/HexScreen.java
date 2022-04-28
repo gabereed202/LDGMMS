@@ -114,21 +114,29 @@ public class HexScreen implements Screen {
             }
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                boolean res = player.keyDown(keycode);
-                // TODO: find a better way to do this inside the Player class
-                // make sure player stays within screen bounds - x
-                float x = player.getX();
-                if (x < 0)
-                    player.setX(0);
-                else if (x > 528 - 32)
-                    player.setX(528 - 32);
-                // "" - y
-                float y = player.getY();
-                if (y < 0)
-                    player.setY(0);
-                else if (y > 392 - 32)
-                    player.setY(392 - 32);
-                return res;
+                switch (keycode) {
+                    case Input.Keys.S:
+                        game.setScreen(new SquareScreen(game, player, width, height));
+                        dispose();
+                        return true;
+                    default:
+                        boolean res = player.keyDown(keycode);
+                        // TODO: find a better way to do this inside the Player class
+                        // make sure player stays within screen bounds - x
+                        float x = player.getX();
+                        if (x < 0)
+                            player.setX(0);
+                        else if (x > 528 - 32)
+                            player.setX(528 - 32);
+                        // "" - y
+                        float y = player.getY();
+                        if (y < 0)
+                            player.setY(0);
+                        else if (y > 392 - 32)
+                            player.setY(392 - 32);
+                        return res;
+                }
+                //return false;
             }
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
@@ -167,11 +175,6 @@ public class HexScreen implements Screen {
         stage.act(delta);
         stage.draw();
         batch.end();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            game.setScreen(new SquareScreen(game, player, width, height));
-            dispose();
-        }
     }
 
     /**

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -42,7 +43,6 @@ public class EditorScreen implements Screen {
         stage.dispose();
     }
 
-    /** @see ApplicationListener#hide */
     @Override
     public void hide() { }
 
@@ -67,14 +67,6 @@ public class EditorScreen implements Screen {
         batch.end();
         stage.act(delta);
         stage.draw();
-
-        // User input (Refactor)
-        if (Gdx.input.isKeyPressed(Input.Keys.S))
-            navigate(new SquareEditor(game, player, width, height));
-        if (Gdx.input.isKeyPressed(Input.Keys.H))
-            navigate(new HexEditor(game, player, width, height));
-        if (Gdx.input.isKeyPressed(Input.Keys.Q))
-            navigate(new MainMenuScreen(game, player, width, height));
     }
 
     /**
@@ -105,12 +97,30 @@ public class EditorScreen implements Screen {
     @Override
     public void resume() { }
 
-    /** @see ApplicationListener#show */
     @Override
     public void show() {
         stage = new Stage(viewport, game.batch);
 
         Gdx.input.setInputProcessor(stage);
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                switch (keycode) {
+                    case Input.Keys.S:
+                        navigate(new SquareEditor(game, player, width, height));
+                        break;
+                    case Input.Keys.H:
+                        navigate(new HexEditor(game, player, width, height));
+                        break;
+                    case Input.Keys.Q:
+                        navigate(new MainMenuScreen(game, player, width, height));
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
 
         // All buttons need their own style so we can individually change their colors
 

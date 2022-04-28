@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -63,13 +64,32 @@ public class MainMenuScreen implements Screen {
 
     /**
      * Called when this screen becomes the current screen for a {@link Game}.
-		 * @author Matthew Rease
+     * @author Matthew Rease
      */
     @Override
     public void show() {
         stage = new Stage(viewport, game.batch);
 
         Gdx.input.setInputProcessor(stage);
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                switch (keycode) {
+                    case Input.Keys.S:
+                        navigate(new SquareScreen(game, player, width, height));
+                        break;
+                    case Input.Keys.H:
+                        navigate(new HexScreen(game, player, width, height));
+                        break;
+                    case Input.Keys.E:
+                        navigate(new EditorScreen(game, player, width, height));
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
+        });
 
         // All buttons need their own style so we can individually change their colors
 
@@ -155,14 +175,6 @@ public class MainMenuScreen implements Screen {
         batch.end();
         stage.act(delta);
         stage.draw();
-
-        // User input
-        if (Gdx.input.isKeyPressed(Input.Keys.S))
-            navigate(new SquareScreen(game, player, width, height)); // Refactored
-        if (Gdx.input.isKeyPressed(Input.Keys.H))
-            navigate(new HexScreen(game, player, width, height)); // Refactored
-        if (Gdx.input.isKeyPressed(Input.Keys.E))
-            navigate(new EditorScreen(game, player, width, height)); // Refactored
     }
 
 
@@ -201,7 +213,6 @@ public class MainMenuScreen implements Screen {
     /**
      * @see ApplicationListener#resume()
      */
-
     @Override
     public void resume() {
 
