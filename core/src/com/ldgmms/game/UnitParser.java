@@ -69,8 +69,8 @@ public class UnitParser { //example usage: UnitParser.UnitObjectList buildableUn
         private int iceRes;
         private int fireRes;
         private int slowRes;
-        private int hpMax;
-        private int mpMax;
+        private float hpMax;
+        private float mpMax;
         private int apMax;
     }
     public static UnitObjectList loadFile() { //can add a list for heroes as well
