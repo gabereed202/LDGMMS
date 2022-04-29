@@ -157,22 +157,20 @@ public class EditorScreen implements Screen {
         viewport = new ScreenViewport(camera);
         stage = new Stage(viewport, game.batch);
         // UI
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = game.font;
-        btn_quit = new ResponsiveTextButton("Main Menu", new TextButtonStyle(buttonStyle)) {
+        btn_quit = new ResponsiveTextButton("Main Menu", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(callingScreen);
                 dispose();
             }
         }; // TODO: set graphic?
-        btn_square = new ResponsiveTextButton("Edit a Square Map", new TextButtonStyle(buttonStyle)) {
+        btn_square = new ResponsiveTextButton("Edit a Square Map", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(new SquareEditor(game, us));
             }
         };
-        btn_hex = new ResponsiveTextButton("Edit a Hexagonal Map", new TextButtonStyle(buttonStyle)) {
+        btn_hex = new ResponsiveTextButton("Edit a Hexagonal Map", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(new HexEditor(game, us));

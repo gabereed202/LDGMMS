@@ -1,6 +1,7 @@
 package com.ldgmms.game.ui;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -22,6 +23,12 @@ public class ResponsiveTextButton extends TextButton {
     private final Color defaultColor;
     private final Color hoverColor;
     private final ClickListener listener;
+
+    private static TextButtonStyle newStyle(BitmapFont font) {
+        TextButtonStyle style = new TextButtonStyle();
+        style.font = font;
+        return style;
+    }
 
     /**
      * Adds the click listener to the button.
@@ -64,6 +71,17 @@ public class ResponsiveTextButton extends TextButton {
     public void onExit() { }
 
     /**
+     * Creates a responsive {@link TextButton}, using the default colors and style, but with a custom font.
+     * @param text Display text
+     * @param font Display font
+     * @see Color#SCARLET
+     * @see Color#BLUE
+     */
+    public ResponsiveTextButton(String text, BitmapFont font) {
+        this(text, font, Color.SCARLET, Color.BLUE);
+    }
+
+    /**
      * Creates a responsive {@link TextButton}, using the default colors.
      * @param text Display text
      * @param style Button style (<code>fontColor</code> <b>will</b> be changed)
@@ -72,6 +90,17 @@ public class ResponsiveTextButton extends TextButton {
      */
     public ResponsiveTextButton(String text, TextButtonStyle style) {
         this(text, style, Color.SCARLET, Color.BLUE);
+    }
+
+    /**
+     * Creates a responsive {@link TextButton}, using default style, but with custom colors and font.
+     * @param text Display text
+     * @param font Display font
+     * @param setDefaultColor Default display color
+     * @param setHoverColor Display color when hovered over
+     */
+    public ResponsiveTextButton(String text, BitmapFont font, Color setDefaultColor, Color setHoverColor) {
+        this(text, newStyle(font), setDefaultColor, setHoverColor);
     }
 
     /**

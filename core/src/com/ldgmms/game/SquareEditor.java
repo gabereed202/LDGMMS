@@ -222,22 +222,20 @@ public class SquareEditor implements Screen {
         ui_camera = new OrthographicCamera();
         ui_viewport = new ScreenViewport(ui_camera);
         stage = new Stage(ui_viewport, game.batch);
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = game.font;
-        btn_quit = new ResponsiveTextButton("Return to Editor Menu", new TextButtonStyle(buttonStyle)) {
+        btn_quit = new ResponsiveTextButton("Return to Editor Menu", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(callingScreen);
                 dispose();
             }
         }; // TODO: set graphic?
-        btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", new TextButtonStyle(buttonStyle)) {
+        btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", game.font) {
             @Override
             public void onClick() {
                 System.out.println("Clicked menu button 1.");
             }
         };
-        btn_ctxmenu_2 = new ResponsiveTextButton("Thing 2", new TextButtonStyle(buttonStyle)) {
+        btn_ctxmenu_2 = new ResponsiveTextButton("Thing 2", game.font) {
             @Override
             public void onClick() {
                 System.out.println("Clicked menu button 2.");

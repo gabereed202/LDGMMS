@@ -4,9 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -64,21 +62,19 @@ public class MainMenuScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
         stage = new Stage(viewport, game.batch);
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = game.font;
-        btn_square = new ResponsiveTextButton("Play on the Square Map", new TextButtonStyle(buttonStyle)) {
+        btn_square = new ResponsiveTextButton("Play on the Square Map", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(new SquareScreen(game, player));
             }
         };
-        btn_hex = new ResponsiveTextButton("Play on the Hexagonal Map", new TextButtonStyle(buttonStyle)) {
+        btn_hex = new ResponsiveTextButton("Play on the Hexagonal Map", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(new HexScreen(game, player));
             }
         };
-        btn_editor = new ResponsiveTextButton("Open the Map Editor", new TextButtonStyle(buttonStyle)) {
+        btn_editor = new ResponsiveTextButton("Open the Map Editor", game.font) {
             @Override
             public void onClick() {
                 game.setScreen(new EditorScreen(game, thisScreen));
