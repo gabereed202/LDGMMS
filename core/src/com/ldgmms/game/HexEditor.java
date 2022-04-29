@@ -4,20 +4,18 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.ldgmms.game.ui.DynamicCamera;
+import com.ldgmms.game.ui.EditorUI;
 import com.ldgmms.game.ui.ResponsiveTextButton;
 
 /**
@@ -31,8 +29,6 @@ public class HexEditor implements Screen {
     // Game data
     private static final int DEFAULT_MAP_WIDTH = 528;
     private static final int DEFAULT_MAP_HEIGHT = 392;
-    // UI
-    private static final float CAMERA_MOVEMENT_SPEED = 60.0f;
 
     /*
      * Instance constants
@@ -41,12 +37,11 @@ public class HexEditor implements Screen {
     private final TBDGame game;
     private final TiledMap map;
     // Window and Screen graphics
-    private final OrthographicCamera game_camera;
+    private final DynamicCamera game_camera;
     private final HexagonalTiledMapRenderer renderer;
     private final Batch batch;
     // UI
-    private final OrthographicCamera ui_camera;
-    private final ScreenViewport ui_viewport; // Allows the game graphics/camera to be moved around separate from the actual window
+    private final EditorUI ui;
     private final Stage stage;
     private final ResponsiveTextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
     private final ClickListener rmbListener;
@@ -58,8 +53,6 @@ public class HexEditor implements Screen {
      */
     // Window and Screen graphics
     private int width, height;
-    private float game_camera_dx; // Camera speed, horizontal
-    private float game_camera_dy; // Camera speed, vertical
     // UI
     private boolean ctxmenu_visible;
 
@@ -86,7 +79,7 @@ public class HexEditor implements Screen {
      * @see Screen#dispose
      */
     public void dispose() {
-        stage.dispose();
+        ui.dispose();
 
         renderer.dispose();
         map.dispose();
@@ -110,6 +103,8 @@ public class HexEditor implements Screen {
         stage.removeListener(cameraListener);
         stage.removeListener(keyListener);
         stage.removeListener(rmbListener);
+
+        ui.hide();
     }
 
     /**
@@ -127,9 +122,7 @@ public class HexEditor implements Screen {
      */
     public void render(float delta) {
         // Move and update camera
-        game_camera.position.x += game_camera_dx * delta * game_camera.zoom;
-        game_camera.position.y += game_camera_dy * delta * game_camera.zoom;
-        game_camera.update();
+        game_camera.move(delta);
 
         ScreenUtils.clear(0, 0, 0.2f, 1); // Set screen dark blue
 
@@ -159,16 +152,9 @@ public class HexEditor implements Screen {
         this.width = width;
         this.height = height;
 
-        // Update UI
-        ui_viewport.update(width, height);
-        ui_camera.position.x = width / 2.0f;
-        ui_camera.position.y = height / 2.0f;
-        ui_camera.update(); // Update matrices
 
-        // Update game display while maintaining its position relative to the window
-        Vector3 pos = game_camera.position.cpy();
-        game_camera.setToOrtho(false, width, height);
-        game_camera.position.set(pos);
+        ui.update(width, height); // Update UI
+        game_camera.update(width, height); // Update game display while maintaining its position relative to the window
 
         // Update UI elements
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
@@ -187,7 +173,8 @@ public class HexEditor implements Screen {
      * Setup this screen when it becomes the current {@link Screen} for a {@link Game}.
      */
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        ui.show();
+
         stage.addListener(rmbListener);
         stage.addListener(keyListener);
         stage.addListener(cameraListener);
@@ -210,16 +197,13 @@ public class HexEditor implements Screen {
         this.game = game;
         map = new TmxMapLoader().load("map_hexMap.tmx"); // TODO: should not load a map, but create a fresh one!
         // Window and Screen graphics
-        game_camera = new OrthographicCamera(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
-        game_camera.position.x = DEFAULT_MAP_WIDTH / 2.0f; // Center camera
-        game_camera.position.y = DEFAULT_MAP_HEIGHT / 2.0f;
+        game_camera = new DynamicCamera(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
         renderer = new HexagonalTiledMapRenderer(map);
         renderer.setView(game_camera);
         batch = renderer.getBatch();
         // UI
-        ui_camera = new OrthographicCamera();
-        ui_viewport = new ScreenViewport(ui_camera);
-        stage = new Stage(ui_viewport, game.batch);
+        ui = new EditorUI(game.batch, game_camera);
+        stage = ui.getStage();
         btn_quit = new ResponsiveTextButton("Return to Editor Menu", game.font) {
             @Override
             public void onClick() {
@@ -247,83 +231,18 @@ public class HexEditor implements Screen {
         };
         keyListener = new InputListener() {
             @Override
-            public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
-                if (amountY == 0)
-                    return false;
-                float old = game_camera.zoom;
-                if (amountY > 0)
-                    game_camera.zoom *= amountY * 1.5;
-                else
-                    game_camera.zoom /= amountY * -1.5;
-                // Failsafe so we don't try dividing by zero... (would only happen when dividing the zoom value to a point beyond what a float's precision allows)
-                if (game_camera.zoom == 0)
-                    game_camera.zoom = old;
-                return true;
-            }
-            @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                switch (keycode) {
-                    case Input.Keys.UP:
-                        game_camera_dy -= CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.DOWN:
-                        game_camera_dy += CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.LEFT:
-                        game_camera_dx += CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.RIGHT:
-                        game_camera_dx -= CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.Q:
-                        game.setScreen(callingScreen);
-                        dispose();
-                        break;
-                    default:
-                        return false;
+                if (keycode == Input.Keys.Q) {
+                    game.setScreen(callingScreen);
+                    dispose();
+                    return true;
                 }
-                return true;
-            }
-            @Override
-            public boolean keyUp(InputEvent event, int keycode) {
-                switch (keycode) {
-                    case Input.Keys.UP:
-                        game_camera_dy += CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.DOWN:
-                        game_camera_dy -= CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.LEFT:
-                        game_camera_dx -= CAMERA_MOVEMENT_SPEED;
-                        break;
-                    case Input.Keys.RIGHT:
-                        game_camera_dx += CAMERA_MOVEMENT_SPEED;
-                        break;
-                    default:
-                        return false;
-                }
-                return true;
+                return false;
             }
         };
         cameraListener = new DragListener() {
             @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                System.out.println("RMB 1 dragged " + x + "," + y);
-            }
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button != Input.Buttons.RIGHT)
-                    return false;
-                setDragStartX(x);
-                setDragStartY(y);
-                return true;
-            }
-            @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                float dx = x - getDragStartX(), dy = y - getDragStartY();
-                game_camera.translate(-dx * game_camera.zoom, -dy * game_camera.zoom, 0.0f);
-                setDragStartX(x);
-                setDragStartY(y);
                 if (ctxmenu_visible)
                     toggleCtxMenu();
             }
@@ -334,9 +253,6 @@ public class HexEditor implements Screen {
         /*
          * Set instance variables
          */
-        // Window and Screen graphics
-        game_camera_dx = 0.0f;
-        game_camera_dy = 0.0f;
         // UI
         ctxmenu_visible = false;
     }
