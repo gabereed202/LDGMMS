@@ -1,6 +1,5 @@
 package com.ldgmms.game;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,173 +18,184 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
 /**
- * TODO: Make a full-featured main menu screen.
- * As well as being the first screen you see,
- * the user should be able to access the main menu again
- * via the pause menu after saving (or not saving) the game state.
+ * Main menu for the game.
+ * <br/>
+ * Allows the user to start a game, or go to the editor.
  */
-
+/*
+ * TODO: Make a full-featured main menu screen.
+ *  As well as being the first screen you see, the user should be able to access the main menu again via the pause menu
+ *  after saving (or not saving) the game state.
+ */
 public class MainMenuScreen implements Screen {
-    private final OrthographicCamera camera;
-    private final ScreenViewport viewport;
+    /*
+     * Instance constants
+     */
+    // Game data
     private final TBDGame game;
     private final Player player;
+    // Window and Screen graphics
+    private final OrthographicCamera camera;
+    private final ScreenViewport viewport;
+    private final Stage stage;
+    // UI
+    private final TextButton.TextButtonStyle buttonStyle, buttonSelectedStyle;
+    private final TextButton btn_square, btn_hex, btn_editor;
+    private final InputListener keyNavListener;
 
-    // Matthew Rease
+    /*
+     * Instance variables
+     */
+    // Window and Screen graphics
     private int width, height;
-    private Stage stage;
-    private TextButton.TextButtonStyle style_square, style_hex, style_editor;
-    private TextButton btn_square, btn_hex, btn_editor;
 
+    /**
+     * Navigate to a different screen and dispose of this one.
+     * @param newScreen destination
+     * @author Matthew Rease
+     */
     private void navigate(Screen newScreen) {
         game.setScreen(newScreen);
         dispose();
     }
 
     /**
-     * Constructor for the MainMenuScreen.
-     * -Sean
-     * @param game represents the game state
-     * @param player main Player passed to the screen
-     */
-    public MainMenuScreen(TBDGame game, Player player, int width, int height) {
-        // Set final (private) fields
-        this.game = game;
-        this.player = player;
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, width, height);
-        viewport = new ScreenViewport(camera);
-
-        // Set regular (private) fields
-        this.width = width;
-        this.height = height;
-    }
-
-
-    /**
-     * Called when this screen becomes the current screen for a {@link Game}.
+     * Factory to provide a ClickListener for a TextButton that navigates to a screen when clicked.
+     * @param button The button this listener will be attached to (for changing the text color).
+     * @param destination Screen (class) to go to when clicked.
+     * @return Customized ClickListener for <code>button</code>
      * @author Matthew Rease
      */
-    @Override
-    public void show() {
-        stage = new Stage(viewport, game.batch);
+    private ClickListener textButtonListener(TextButton button, Class<? extends Screen> destination) {
+        return new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Screen screen = null;
+                try {
+                    screen = destination.getConstructor(new Class[]{ TBDGame.class, Player.class, int.class, int.class }).newInstance(game, player, width, height);
+                }
+                catch (Exception e) {
+                    System.out.println("Class given to EditorScreen#textButtonListener does not contain Constructor(TBDGame, Player, int ,int)!");
+                    e.printStackTrace();
+                }
+                if (screen != null)
+                    navigate(screen);
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.setStyle(buttonSelectedStyle);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.setStyle(buttonStyle);
+            }
+        };
+    }
 
-        Gdx.input.setInputProcessor(stage);
-        stage.addListener(new InputListener() {
+    /**
+     * Create a new main menu screen
+     * @param game The current game state
+     * @param player main Player passed around to each screen
+     * @author Matthew Rease
+     */
+    public MainMenuScreen(TBDGame game, Player player, int width, int height) {
+        /*
+         * Set instance constants
+         */
+        // Game data
+        this.game = game;
+        this.player = player;
+        // Window and Screen graphics
+        camera = new OrthographicCamera(width, height);
+        viewport = new ScreenViewport(camera);
+        stage = new Stage(viewport, game.batch);
+        // UI
+        buttonStyle = new TextButton.TextButtonStyle();
+        buttonSelectedStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = buttonSelectedStyle.font = game.font;
+        buttonStyle.fontColor = Color.SCARLET;
+        buttonSelectedStyle.fontColor = Color.BLUE;
+        btn_square = new TextButton("Play on the Square Map", buttonStyle);
+        btn_hex = new TextButton("Play on the Hexagonal Map", buttonStyle);
+        btn_editor = new TextButton("Open the Map Editor", buttonStyle); // TODO: set graphic?
+        keyNavListener = new InputListener() {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 switch (keycode) {
-                    case Input.Keys.S:
-                        navigate(new SquareScreen(game, player, width, height));
+                    case Input.Keys.E:
+                        navigate(new EditorScreen(game, player, width, height));
                         break;
                     case Input.Keys.H:
                         navigate(new HexScreen(game, player, width, height));
                         break;
-                    case Input.Keys.E:
-                        navigate(new EditorScreen(game, player, width, height));
+                    case Input.Keys.S:
+                        navigate(new SquareScreen(game, player, width, height));
                         break;
                     default:
                         return false;
                 }
                 return true;
             }
-        });
-
-        // All buttons need their own style so we can individually change their colors
-
-        // Create square map button
-        style_square = new TextButton.TextButtonStyle();
-        style_square.font = game.font;
-        style_square.fontColor = Color.SCARLET;
-        btn_square = new TextButton("Play on the Square Map", style_square);
-        btn_square.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                navigate(new SquareScreen(game, player, width, height)); // Refactored
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_square.fontColor = Color.BLUE;
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_square.fontColor = Color.SCARLET;
-            }
-        });
+        };
+        // Add UI to stage
         stage.addActor(btn_square);
-
-        // Create hexagonal map button
-        style_hex = new TextButton.TextButtonStyle();
-        style_hex.font = game.font;
-        style_hex.fontColor = Color.SCARLET;
-        btn_hex = new TextButton("Play on the Hexagonal Map", style_hex);
-        btn_hex.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                navigate(new HexScreen(game, player, width, height)); // Refactored
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_hex.fontColor = Color.BLUE;
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_hex.fontColor = Color.SCARLET;
-            }
-        });
         stage.addActor(btn_hex);
-
-        // Create map editor button
-        style_editor = new TextButton.TextButtonStyle();
-        style_editor.font = game.font;
-        style_editor.fontColor = Color.SCARLET;
-        btn_editor = new TextButton("Open the Map Editor", style_editor);
-        btn_editor.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                navigate(new EditorScreen(game, player, width, height)); // Refactored
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_editor.fontColor = Color.BLUE;
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_editor.fontColor = Color.SCARLET;
-            }
-        });
         stage.addActor(btn_editor);
+
+        /*
+         * Set instance variables
+         */
+        // Graphics/UI
+        this.width = width;
+        this.height = height;
     }
 
     /**
-     * Called when the screen should render itself.
-     *
-     * @param delta The time in seconds since the last render.
+     * Setup this screen when it becomes the current {@link Screen} for a {@link Game}.
+     * @author Matthew Rease
      */
-    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+        stage.addListener(keyNavListener);
+
+        /*
+         * Setup UI Element Listeners
+         */
+        btn_square.addListener(textButtonListener(btn_square, SquareScreen.class)); // Square map button
+        btn_hex.addListener(textButtonListener(btn_hex, HexScreen.class)); // Hexagonal map button
+        btn_editor.addListener(textButtonListener(btn_editor, EditorScreen.class)); // Map editor button
+    }
+
+    /**
+     * Display the main menu.
+     * @param delta The time in seconds since the last render.
+     * @see Screen#render(float)
+     * @author (original?)
+     * @author Matthew Rease
+     */
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0.2f, 1);
-
-        Batch batch = game.batch; // For ease of typing
+        Batch batch = game.batch;
+        batch.setProjectionMatrix(camera.combined);
 
         // Rendering tasks
-        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         game.font.draw(batch, "Main Menu Screen", width * 0.33f, height * 0.8f);
         batch.end();
+        // Render UI (actors)
         stage.act(delta);
         stage.draw();
     }
 
-
     /**
-     * @param width -
-     * @param height -
-     * @see ApplicationListener#resize(int, int)
+     * Update window size and UI.
+     * @param width New window width
+     * @param height New window height
+     * @see Screen#resize(int, int)
+     * @author Matthew Rease
      */
-    @Override
     public void resize(int width, int height) {
-        // Set local variables
+        // Update local variables
         this.width = width;
         this.height = height;
 
@@ -202,38 +212,43 @@ public class MainMenuScreen implements Screen {
     }
 
     /**
-     * @see ApplicationListener#pause()
+     * Runs when the game is "paused".
+     * Which seems to only happen when the window is minimized, and not just from losing focus.
+     * It also runs when the program is closed.
+     * @see Screen#pause
      */
-    @Override
-    public void pause() {
-
-    }
-
+    public void pause() { }
 
     /**
-     * @see ApplicationListener#resume()
+     * Run when game is "unpaused".
+     * @see Screen#resume
+     * @see EditorScreen#pause
      */
-    @Override
-    public void resume() {
-
-    }
-
+    public void resume() { }
 
     /**
-     * Called when this screen is no longer the current screen for a {@link Game}.
+     * Called when this is no longer the current screen for a {@link Game}.
+     * @see MainMenuScreen#navigate
+     * @see Screen#hide
+     * @author Matthew Rease
      */
-    @Override
     public void hide() {
+        /*
+         * Remove UI Element Listeners
+         */
+        btn_editor.clearListeners();
+        btn_hex.clearListeners();
+        btn_square.clearListeners();
 
+        stage.removeListener(keyNavListener);
     }
 
     /**
-     * Called when this screen should release all resources.
+     * Free resources when this screen is no longer needed.
+     * @see Screen#dispose
+     * @author Matthew Rease
      */
-    @Override
     public void dispose() {
         stage.dispose();
     }
-
 }
-

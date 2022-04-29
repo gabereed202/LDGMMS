@@ -1,16 +1,15 @@
 package com.ldgmms.game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,35 +19,60 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.ldgmms.game.ui.ResponsiveTextButton;
 
-public class HexEditor implements Screen /*implements InputProcessor*/ {
-    // Constants
+/**
+ * Map editor for hex maps.
+ * @author Matthew Rease
+ */
+public class HexEditor implements Screen {
+    /*
+     * Class constants
+     */
     private static final float camera_movement_speed = 60.0f;
 
-    // Instance constants
+    /*
+     * Instance constants
+     */
+    // Game data
     private final TBDGame game;
-    private final Player player; // Unused by this class
+    private final TiledMap map;
+    // Window and Screen graphics
     private final OrthographicCamera ui_camera;
     private final OrthographicCamera game_camera;
     private final ScreenViewport ui_viewport; // Allows the game graphics/camera to be moved around separate from the actual window
     private final FitViewport game_viewport;
-    private final TiledMap map;
+    private final Stage stage;
     private final HexagonalTiledMapRenderer renderer;
+    // UI
+    private final ResponsiveTextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
+    private final ClickListener rmbListener;
+    private final InputListener keyListener;
+    private final DragListener cameraListener;
 
-    // Instances variables
+    /*
+     * Instance variables
+     */
+    // Window and Screen graphics
     private int width, height;
-    private Stage stage;
-    private TextButton.TextButtonStyle style_quit, style_ctxmenu_1, style_ctxmenu_2;
-    private TextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
+    private float game_camera_dx; // Camera speed, horizontal
+    private float game_camera_dy; // Camera speed, vertical
+    // UI
     private boolean ctxmenu_visible;
-    private float game_camera_dx = 0.0f; // Camera speed, horizontal
-    private float game_camera_dy = 0.0f; // Camera speed, vertical
 
+    /**
+     * Navigate to a different screen and dispose of this one.
+     * @param newScreen destination
+     */
     private void navigate(Screen newScreen) {
         game.setScreen(newScreen);
         dispose();
     }
 
+    /**
+     * Toggle visibility of drop-down context menu.
+     */
+    // TODO: Find longest button (string) and if menu will go offscreen, adjust accordingly.
     private void toggleCtxMenu() {
         if (ctxmenu_visible) {
             btn_ctxmenu_1.remove();
@@ -63,6 +87,10 @@ public class HexEditor implements Screen /*implements InputProcessor*/ {
         ctxmenu_visible = !ctxmenu_visible;
     }
 
+    /**
+     * Free resources when this screen is no longer needed.
+     * @see Screen#dispose
+     */
     public void dispose() {
         stage.dispose();
 
@@ -70,33 +98,67 @@ public class HexEditor implements Screen /*implements InputProcessor*/ {
         map.dispose();
     }
 
-    public void hide() { }
+    /**
+     * Called when this is no longer the current screen for a {@link Game}.
+     * @see HexEditor#navigate
+     * @see Screen#hide
+     */
+    public void hide() {
+        if (ctxmenu_visible)
+            toggleCtxMenu();
 
+        /*
+         * Remove UI Element Listeners
+         */
+        btn_ctxmenu_2.removeListener();
+        btn_ctxmenu_1.removeListener();
+        btn_quit.removeListener();
+
+        stage.removeListener(cameraListener);
+        stage.removeListener(keyListener);
+        stage.removeListener(rmbListener);
+    }
+
+    /**
+     * Runs when the game is "paused".
+     * Which seems to only happen when the window is minimized, and not just from losing focus.
+     * It also runs when the program is closed.
+     * @see Screen#pause
+     */
     public void pause() { }
 
+    /**
+     * Display the map editor menu.
+     * @param delta The time in seconds since the last render.
+     * @see Screen#render(float)
+     */
     public void render(float delta) {
-        ScreenUtils.clear(0, 0, 0.2f, 1);
-
-        // Update camera
+        // Move and update camera
         game_camera.position.x += game_camera_dx * delta * game_camera.zoom;
         game_camera.position.y += game_camera_dy * delta * game_camera.zoom;
         game_camera.update();
 
+        ScreenUtils.clear(0, 0, 0.2f, 1); // Set screen dark blue
         Batch batch = renderer.getBatch();
-
-        // Rendering tasks
         batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
+
+        // Render tasks
         renderer.render();
         batch.begin();
-        // Render game
         game.font.draw(batch, "TEST", 50, 50);
-        // Render UI
-        batch.setProjectionMatrix(ui_camera.combined);
+        batch.end();
+        // Render UI (actors)
+        //batch.setProjectionMatrix(ui_camera.combined);
         stage.act(delta);
         stage.draw();
-        batch.end();
     }
 
+    /**
+     * Update window size and UI.
+     * @param width New window width
+     * @param height New window height
+     * @see Screen#resize(int, int)
+     */
     public void resize(int width, int height) {
         // Update local variables
         this.width = width;
@@ -117,43 +179,78 @@ public class HexEditor implements Screen /*implements InputProcessor*/ {
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
     }
 
+    /**
+     * Run when game is "unpaused".
+     * @see Screen#resume
+     * @see HexEditor#pause
+     */
     public void resume() { }
 
+    /**
+     * Setup this screen when it becomes the current {@link Screen} for a {@link Game}.
+     */
     public void show() {
-        renderer.setView(game_camera);
-
-        stage = new Stage(ui_viewport, game.batch);
         Gdx.input.setInputProcessor(stage);
-        stage.addListener(new ClickListener(Input.Buttons.RIGHT) {
+        stage.addListener(rmbListener);
+        stage.addListener(keyListener);
+        stage.addListener(cameraListener);
+
+        //btn_quit.setPosition(0.0f, 768.0f);
+        btn_quit.addListener();
+        btn_ctxmenu_1.addListener();
+        btn_ctxmenu_2.addListener();
+    }
+
+    /**
+     * Initialize new map editor.
+     * @param game The current game state
+     * @param player (Currently unused, just passed to other methods?)
+     * @param width Current width of window
+     * @param height Current height of window
+     */
+    public HexEditor(TBDGame game, Player player, int width, int height) {
+        /*
+         * Set instance constants
+         */
+        // Game data
+        this.game = game;
+        map = new TmxMapLoader().load("map_hexMap.tmx"); // TODO: should not load a map, but create a fresh one!
+        // Window and Screen graphics
+        ui_camera = new OrthographicCamera(width, height);
+        ui_viewport = new ScreenViewport(ui_camera);
+        game_camera = new OrthographicCamera(1056, 784);
+        game_viewport = new FitViewport(1056, 784, game_camera);
+        renderer = new HexagonalTiledMapRenderer(map);
+        renderer.setView(game_camera);
+        stage = new Stage(ui_viewport, game.batch); // TODO: ???
+        // UI
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = game.font;
+        btn_quit = new ResponsiveTextButton("Main Menu", new TextButton.TextButtonStyle(buttonStyle)) {
+            @Override
+            public void onClick() {
+                navigate(new MainMenuScreen(game, player, width, height));
+            }
+        }; // TODO: set graphic?
+        btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", new TextButton.TextButtonStyle(buttonStyle)) {
+            @Override
+            public void onClick() {
+                System.out.println("Clicked menu button 1.");
+            }
+        };
+        btn_ctxmenu_2 = new ResponsiveTextButton("Thing 2", new TextButton.TextButtonStyle(buttonStyle)) {
+            @Override
+            public void onClick() {
+                System.out.println("Clicked menu button 2.");
+            }
+        };
+        rmbListener = new ClickListener(Input.Buttons.RIGHT) {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 toggleCtxMenu();
             }
-        });
-        stage.addListener(new DragListener() {
-            @Override
-            public void drag(InputEvent event, float x, float y, int pointer) {
-                System.out.println("RMB 1 dragged " + x + "," + y);
-            }
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (button != Input.Buttons.RIGHT)
-                    return false;
-                setDragStartX(x);
-                setDragStartY(y);
-                return true;
-            }
-            @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                float dx = x - getDragStartX(), dy = y - getDragStartY();
-                game_camera.translate(-dx * game_camera.zoom, -dy * game_camera.zoom, 0.0f);
-                setDragStartX(x);
-                setDragStartY(y);
-                if (ctxmenu_visible)
-                    toggleCtxMenu();
-            }
-        });
-        stage.addListener(new InputListener() {
+        };
+        keyListener = new InputListener() {
             @Override
             public boolean scrolled(InputEvent event, float x, float y, float amountX, float amountY) {
                 if (amountY == 0)
@@ -211,83 +308,42 @@ public class HexEditor implements Screen /*implements InputProcessor*/ {
                 }
                 return true;
             }
-        });
-
-        style_quit = new TextButton.TextButtonStyle();
-        style_quit.font = game.font;
-        style_quit.fontColor = Color.SCARLET;
-        btn_quit = new TextButton("Main Menu", style_quit); // TODO: set graphic?
-        btn_quit.setPosition(0.0f, 768.0f);
-        btn_quit.addListener(new ClickListener() {
+        };
+        cameraListener = new DragListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                navigate(new MainMenuScreen(game, player, width, height)); // Refactored
+            public void drag(InputEvent event, float x, float y, int pointer) {
+                System.out.println("RMB 1 dragged " + x + "," + y);
             }
             @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_quit.fontColor = Color.BLUE;
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (button != Input.Buttons.RIGHT)
+                    return false;
+                setDragStartX(x);
+                setDragStartY(y);
+                return true;
             }
             @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_quit.fontColor = Color.SCARLET;
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                float dx = x - getDragStartX(), dy = y - getDragStartY();
+                game_camera.translate(-dx * game_camera.zoom, -dy * game_camera.zoom, 0.0f);
+                setDragStartX(x);
+                setDragStartY(y);
+                if (ctxmenu_visible)
+                    toggleCtxMenu();
             }
-        });
+        };
+        // Add UI to stage
         stage.addActor(btn_quit);
 
-        style_ctxmenu_1 = new TextButton.TextButtonStyle();
-        style_ctxmenu_1.font = game.font;
-        style_ctxmenu_1.fontColor = Color.SCARLET;
-        btn_ctxmenu_1 = new TextButton("Thing 1", style_ctxmenu_1);
-        btn_ctxmenu_1.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked menu button 1.");
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_ctxmenu_1.fontColor = Color.BLUE;
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_ctxmenu_1.fontColor = Color.SCARLET;
-            }
-        });
-
-        style_ctxmenu_2 = new TextButton.TextButtonStyle();
-        style_ctxmenu_2.font = game.font;
-        style_ctxmenu_2.fontColor = Color.SCARLET;
-        btn_ctxmenu_2 = new TextButton("Thing 2", style_ctxmenu_2);
-        btn_ctxmenu_2.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked menu button 2.");
-            }
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                style_ctxmenu_2.fontColor = Color.BLUE;
-            }
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                style_ctxmenu_2.fontColor = Color.SCARLET;
-            }
-        });
-
-        ctxmenu_visible = false;
-    }
-
-    public HexEditor(TBDGame game, Player player, int width, int height) {
-        this.game = game;
-        this.player = player;
-        ui_camera = new OrthographicCamera(width, height);
-        ui_viewport = new ScreenViewport(ui_camera);
-        game_camera = new OrthographicCamera(1056, 784);
-        game_viewport = new FitViewport(1056, 784, game_camera);
-        map = new TmxMapLoader().load("map_hexMap.tmx"); // TODO: should not load a map, but create a fresh one!
-        renderer = new HexagonalTiledMapRenderer(map);
-
-        // Set private fields
+        /*
+         * Set instance variables
+         */
+        // Window and Screen graphics
         this.width = width;
         this.height = height;
+        game_camera_dx = 0.0f;
+        game_camera_dy = 0.0f;
+        // UI
+        ctxmenu_visible = false;
     }
 }
-
