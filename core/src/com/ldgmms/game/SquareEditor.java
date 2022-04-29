@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ldgmms.game.ui.ResponsiveTextButton;
 
@@ -31,7 +30,11 @@ public class SquareEditor implements Screen {
     /*
      * Class constants
      */
-    private static final float camera_movement_speed = 60.0f;
+    // Game data
+    private static final int DEFAULT_MAP_WIDTH = 1024;
+    private static final int DEFAULT_MAP_HEIGHT = 768;
+    // UI
+    private static final float CAMERA_MOVEMENT_SPEED = 60.0f;
 
     /*
      * Instance constants
@@ -40,13 +43,13 @@ public class SquareEditor implements Screen {
     private final TBDGame game;
     private final TiledMap map;
     // Window and Screen graphics
-    private final OrthographicCamera ui_camera;
     private final OrthographicCamera game_camera;
-    private final ScreenViewport ui_viewport;
-    private final FitViewport game_viewport;
-    private final Stage stage;
     private final OrthogonalTiledMapRenderer renderer;
+    private final Batch batch;
     // UI
+    private final OrthographicCamera ui_camera;
+    private final ScreenViewport ui_viewport;
+    private final Stage stage;
     private final ResponsiveTextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
     private final ClickListener rmbListener;
     private final InputListener keyListener;
@@ -61,15 +64,6 @@ public class SquareEditor implements Screen {
     private float game_camera_dy; // Camera speed, vertical
     // UI
     private boolean ctxmenu_visible;
-
-    /**
-     * Navigate to a different screen and dispose of this one.
-     * @param newScreen destination
-     */
-    private void navigate(Screen newScreen) {
-        game.setScreen(newScreen);
-        dispose();
-    }
 
     /**
      * Toggle visibility of drop-down context menu.
@@ -102,7 +96,6 @@ public class SquareEditor implements Screen {
 
     /**
      * Called when this is no longer the current screen for a {@link Game}.
-     * @see SquareEditor#navigate
      * @see Screen#hide
      */
     public void hide() {
@@ -141,16 +134,18 @@ public class SquareEditor implements Screen {
         game_camera.update();
 
         ScreenUtils.clear(0, 0, 0, 1); // Set screen black
-        Batch batch = renderer.getBatch();
-        batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
 
-        // Render tasks
+        /*
+         * Game render tasks
+         */
+        // Render map
         renderer.render();
+        // Draw sprites
+        batch.setProjectionMatrix(game_camera.combined); // Specify coordinate system?
         batch.begin();
         game.font.draw(batch, "TEST", 50, 50);
         batch.end();
         // Render UI (actors)
-        //batch.setProjectionMatrix(ui_camera.combined);
         stage.act(delta);
         stage.draw();
     }
@@ -179,6 +174,8 @@ public class SquareEditor implements Screen {
 
         // Update UI elements
         btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
+        if (ctxmenu_visible)
+            toggleCtxMenu();
     }
 
     /**
@@ -197,7 +194,6 @@ public class SquareEditor implements Screen {
         stage.addListener(keyListener);
         stage.addListener(cameraListener);
 
-        //btn_quit.setPosition(0.0f, 768.0f);
         btn_quit.addListener();
         btn_ctxmenu_1.addListener();
         btn_ctxmenu_2.addListener();
@@ -206,11 +202,9 @@ public class SquareEditor implements Screen {
     /**
      * Initialize new map editor.
      * @param game The current game state
-     * @param player (Currently unused, just passed to other methods?)
-     * @param width Current width of window
-     * @param height Current height of window
+     * @param callingScreen The screen this was called from, to be returned to when done
      */
-    public SquareEditor(TBDGame game, Player player, int width, int height) {
+    public SquareEditor(TBDGame game, Screen callingScreen) {
         /*
          * Set instance constants
          */
@@ -218,20 +212,23 @@ public class SquareEditor implements Screen {
         this.game = game;
         map = new TmxMapLoader().load("map_squareMap.tmx"); // TODO: should not load a map, but create a fresh one!
         // Window and Screen graphics
-        ui_camera = new OrthographicCamera(width, height);
-        ui_viewport = new ScreenViewport(ui_camera);
-        game_camera = new OrthographicCamera(2048, 1536);
-        game_viewport = new FitViewport(2048, 1536, game_camera);
+        game_camera = new OrthographicCamera(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
+        game_camera.position.x = DEFAULT_MAP_WIDTH / 2.0f; // Center camera
+        game_camera.position.y = DEFAULT_MAP_HEIGHT / 2.0f;
         renderer = new OrthogonalTiledMapRenderer(map);
         renderer.setView(game_camera);
-        stage = new Stage(ui_viewport, game.batch); // TODO: ???
+        batch = renderer.getBatch();
         // UI
+        ui_camera = new OrthographicCamera();
+        ui_viewport = new ScreenViewport(ui_camera);
+        stage = new Stage(ui_viewport, game.batch);
         TextButtonStyle buttonStyle = new TextButtonStyle();
         buttonStyle.font = game.font;
-        btn_quit = new ResponsiveTextButton("Main Menu", new TextButtonStyle(buttonStyle)) {
+        btn_quit = new ResponsiveTextButton("Return to Editor Menu", new TextButtonStyle(buttonStyle)) {
             @Override
             public void onClick() {
-                navigate(new MainMenuScreen(game, player, width, height));
+                game.setScreen(callingScreen);
+                dispose();
             }
         }; // TODO: set graphic?
         btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", new TextButtonStyle(buttonStyle)) {
@@ -271,19 +268,20 @@ public class SquareEditor implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 switch (keycode) {
                     case Input.Keys.UP:
-                        game_camera_dy -= camera_movement_speed;
+                        game_camera_dy -= CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.DOWN:
-                        game_camera_dy += camera_movement_speed;
+                        game_camera_dy += CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.LEFT:
-                        game_camera_dx += camera_movement_speed;
+                        game_camera_dx += CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.RIGHT:
-                        game_camera_dx -= camera_movement_speed;
+                        game_camera_dx -= CAMERA_MOVEMENT_SPEED;
                         break;
-                    case Input.Keys.M:
-                        navigate(new MainMenuScreen(game, player, width, height));
+                    case Input.Keys.Q:
+                        game.setScreen(callingScreen);
+                        dispose();
                         break;
                     default:
                         return false;
@@ -294,16 +292,16 @@ public class SquareEditor implements Screen {
             public boolean keyUp(InputEvent event, int keycode) {
                 switch (keycode) {
                     case Input.Keys.UP:
-                        game_camera_dy += camera_movement_speed;
+                        game_camera_dy += CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.DOWN:
-                        game_camera_dy -= camera_movement_speed;
+                        game_camera_dy -= CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.LEFT:
-                        game_camera_dx -= camera_movement_speed;
+                        game_camera_dx -= CAMERA_MOVEMENT_SPEED;
                         break;
                     case Input.Keys.RIGHT:
-                        game_camera_dx += camera_movement_speed;
+                        game_camera_dx += CAMERA_MOVEMENT_SPEED;
                         break;
                     default:
                         return false;
@@ -341,8 +339,6 @@ public class SquareEditor implements Screen {
          * Set instance variables
          */
         // Window and Screen graphics
-        this.width = width;
-        this.height = height;
         game_camera_dx = 0.0f;
         game_camera_dy = 0.0f;
         // UI

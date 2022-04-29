@@ -28,10 +28,10 @@ public class HexScreen implements Screen {
      * Class constants
      */
     // Game Data
-    private static final String default_map = "map_hexMap.tmx";
-    private static final int default_map_width = 528;
-    private static final int default_map_height = 392;
-    private static final int default_map_tile_length = 32;
+    private static final String DEFAULT_MAP = "map_hexMap.tmx";
+    private static final int DEFAULT_MAP_WIDTH = 528;
+    private static final int DEFAULT_MAP_HEIGHT = 392;
+    private static final int DEFAULT_MAP_TILE_LENGTH = 32;
 
     /*
      * Instance constants
@@ -61,26 +61,24 @@ public class HexScreen implements Screen {
      * Initialize new {@link Screen} to represent a map with a hex-based grid.
      * @param game The current game state
      * @param player Main player of the game
-     * @param width Current width of window
-     * @param height Current height of window
      */
-    public HexScreen(TBDGame game, Player player, int width, int height) {
+    public HexScreen(TBDGame game, Player player) {
         /*
          * Set instance constants
          */
         // Game data
         this.game = game;
         this.player = player;
-        map = new TmxMapLoader().load(default_map);
+        map = new TmxMapLoader().load(DEFAULT_MAP);
         // Window and Screen graphics
-        game_camera = new OrthographicCamera(default_map_width, default_map_height);
-        game_camera.position.x = default_map_width / 2.0f; // Center camera
-        game_camera.position.y = default_map_height / 2.0f;
+        game_camera = new OrthographicCamera(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
+        game_camera.position.x = DEFAULT_MAP_WIDTH / 2.0f; // Center camera
+        game_camera.position.y = DEFAULT_MAP_HEIGHT / 2.0f;
         renderer = new HexagonalTiledMapRenderer(map);
         renderer.setView(game_camera);
         batch = renderer.getBatch();
         // UI
-        ui_camera = new OrthographicCamera(width, height);
+        ui_camera = new OrthographicCamera();
         ui_viewport = new ScreenViewport(ui_camera);
         stage = new Stage(ui_viewport, game.batch);
         keyListener = new InputListener() {
@@ -102,7 +100,7 @@ public class HexScreen implements Screen {
             public boolean keyDown(InputEvent event, int keycode) {
                 switch (keycode) {
                     case Input.Keys.S:
-                        game.setScreen(new SquareScreen(game, player, width, height));
+                        game.setScreen(new SquareScreen(game, player));
                         dispose();
                         return true;
                     default:
@@ -114,14 +112,14 @@ public class HexScreen implements Screen {
                         float x = player.getX();
                         if (x < 0)
                             player.setX(0);
-                        else if (x > default_map_width - default_map_tile_length)
-                            player.setX(default_map_width - default_map_tile_length);
+                        else if (x > DEFAULT_MAP_WIDTH - DEFAULT_MAP_TILE_LENGTH)
+                            player.setX(DEFAULT_MAP_WIDTH - DEFAULT_MAP_TILE_LENGTH);
                         // "" - y
                         float y = player.getY();
                         if (y < 0)
                             player.setY(0);
-                        else if (y > default_map_height - default_map_tile_length)
-                            player.setY(default_map_height - default_map_tile_length);
+                        else if (y > DEFAULT_MAP_HEIGHT - DEFAULT_MAP_TILE_LENGTH)
+                            player.setY(DEFAULT_MAP_HEIGHT - DEFAULT_MAP_TILE_LENGTH);
                         return res;
                 }
             }
@@ -155,13 +153,6 @@ public class HexScreen implements Screen {
                 setDragStartY(y);
             }
         };
-
-        /*
-         * Set instance variables
-         */
-        // Window and Screen graphics
-        this.width = width;
-        this.height = height;
 
         player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));
         player.setPosition(player.getSquareX(), player.getSquareY());

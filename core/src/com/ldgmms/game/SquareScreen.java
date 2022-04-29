@@ -28,10 +28,10 @@ public class SquareScreen implements Screen {
      * Class constants
      */
     // Game Data
-    private static final String default_map = "map_squareMap.tmx";
-    private static final int default_map_width = 1024;
-    private static final int default_map_height = 768;
-    private static final int default_map_tile_length = 32;
+    private static final String DEFAULT_MAP = "map_squareMap.tmx";
+    private static final int DEFAULT_MAP_WIDTH = 1024;
+    private static final int DEFAULT_MAP_HEIGHT = 768;
+    private static final int DEFAULT_MAP_TILE_LENGTH = 32;
 
     /*
      * Instance constants
@@ -61,21 +61,19 @@ public class SquareScreen implements Screen {
      * Initialize new {@link Screen} to represent a map with a square-based grid.
      * @param game The current game state
      * @param player Main player of the game
-     * @param width Current width of window
-     * @param height Current height of window
      */
-    public SquareScreen(TBDGame game, Player player, int width, int height) {
+    public SquareScreen(TBDGame game, Player player) {
         /*
          * Set instance constants
          */
         // Game data
         this.game = game;
         this.player = player;
-        map = new TmxMapLoader().load(default_map);
+        map = new TmxMapLoader().load(DEFAULT_MAP);
         // Window and Screen graphics
-        game_camera = new OrthographicCamera(default_map_width, default_map_height);
-        game_camera.position.x = default_map_width / 2.0f; // Center camera
-        game_camera.position.y = default_map_height / 2.0f;
+        game_camera = new OrthographicCamera(DEFAULT_MAP_WIDTH, DEFAULT_MAP_HEIGHT);
+        game_camera.position.x = DEFAULT_MAP_WIDTH / 2.0f; // Center camera
+        game_camera.position.y = DEFAULT_MAP_HEIGHT / 2.0f;
         renderer = new OrthogonalTiledMapRenderer(map);
         renderer.setView(game_camera);
         batch = renderer.getBatch();
@@ -106,7 +104,7 @@ public class SquareScreen implements Screen {
                     case Input.Keys.H:
                         player.setSquareX(player.getX());
                         player.setSquareY(player.getY());
-                        game.setScreen(new HexScreen(game, player, width, height));
+                        game.setScreen(new HexScreen(game, player));
                         dispose();
                         return true;
                     default:
@@ -118,14 +116,14 @@ public class SquareScreen implements Screen {
                         float x = player.getX();
                         if (x < 0)
                             player.setX(0);
-                        else if (x > default_map_width - default_map_tile_length)
-                            player.setX(default_map_width - default_map_tile_length);
+                        else if (x > DEFAULT_MAP_WIDTH - DEFAULT_MAP_TILE_LENGTH)
+                            player.setX(DEFAULT_MAP_WIDTH - DEFAULT_MAP_TILE_LENGTH);
                         // "" - y
                         float y = player.getY();
                         if (y < 0)
                             player.setY(0);
-                        else if (y > default_map_height - default_map_tile_length)
-                            player.setY(default_map_height - default_map_tile_length);
+                        else if (y > DEFAULT_MAP_HEIGHT - DEFAULT_MAP_TILE_LENGTH)
+                            player.setY(DEFAULT_MAP_HEIGHT - DEFAULT_MAP_TILE_LENGTH);
                         return res;
                 }
             }
@@ -159,13 +157,6 @@ public class SquareScreen implements Screen {
                 setDragStartY(y);
             }
         };
-
-        /*
-         * Set instance variables
-         */
-        // Window and Screen graphics
-        this.width = width;
-        this.height = height;
 
         // Update player with collision data for the map
         player.setCollisionLayer((TiledMapTileLayer) map.getLayers().get(0));

@@ -15,7 +15,7 @@ public class TBDGame extends Game {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		player = new Player(new Sprite(new Texture("rogueSprite-simple.png")));
-		setScreen(new MainMenuScreen(this, player, 800, 480));
+		setScreen(new MainMenuScreen(this, player));
 	}
 
 	@Override
