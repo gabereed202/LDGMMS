@@ -23,6 +23,7 @@ public class EditorUI {
     private final InputListener keyListener;
     private final DragListener cameraListener;
     private final ResponsiveTextButton quitButton;
+    private final DropDownList contextMenu;
 
     public void dispose() {
         stage.dispose();
@@ -34,10 +35,16 @@ public class EditorUI {
 
     public void hide() {
         // Actors
+        contextMenu.removeListener();
         quitButton.removeListener();
 
         stage.removeListener(cameraListener);
         stage.removeListener(keyListener);
+    }
+
+    public void render(float delta) {
+        stage.act(delta);
+        stage.draw();
     }
 
     public void show() {
@@ -47,6 +54,7 @@ public class EditorUI {
 
         // Actors
         quitButton.addListener();
+        contextMenu.addListener();
     }
 
     public void update(int width, int height) {
@@ -58,9 +66,10 @@ public class EditorUI {
 
         // Actors
         quitButton.setPosition(0.0f, height - quitButton.getHeight());
+        contextMenu.update(height);
     }
 
-    public EditorUI(DynamicCamera game_camera, BitmapFont font, Game game, Screen callingScreen) {
+    public EditorUI(DynamicCamera game_camera, BitmapFont font, Game game, Screen callingScreen, ResponsiveTextButton... contextMenuButtons) {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
         stage = new Stage(viewport);
@@ -94,6 +103,10 @@ public class EditorUI {
                         break;
                     case Input.Keys.RIGHT:
                         game_camera.accelerate(-CAMERA_MOVEMENT_SPEED, 0);
+                        break;
+                    case Input.Keys.Q:
+                        game.setScreen(callingScreen);
+                        dispose();
                         break;
                     default:
                         return false;
@@ -140,8 +153,11 @@ public class EditorUI {
                 game_camera.translate(-dx * game_camera.zoom, -dy * game_camera.zoom, 0.0f);
                 setDragStartX(x);
                 setDragStartY(y);
+                contextMenu.hide();
             }
         };
+
+        // Quit button
         quitButton = new ResponsiveTextButton("Return to Editor Menu", font) {
             @Override
             public void onClick() {
@@ -150,5 +166,8 @@ public class EditorUI {
             }
         }; // TODO: set graphic?
         stage.addActor(quitButton);
+
+        // Context menu
+        contextMenu = new DropDownList(stage, contextMenuButtons);
     }
 }

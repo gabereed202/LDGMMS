@@ -1,18 +1,11 @@
 package com.ldgmms.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ldgmms.game.ui.DynamicCamera;
 import com.ldgmms.game.ui.EditorUI;
@@ -42,37 +35,12 @@ public class HexEditor implements Screen {
     private final Batch batch;
     // UI
     private final EditorUI ui;
-    private final Stage stage;
-    private final ResponsiveTextButton btn_ctxmenu_1, btn_ctxmenu_2;
-    private final ClickListener rmbListener;
-    private final InputListener keyListener;
-    private final DragListener cameraListener;
 
     /*
      * Instance variables
      */
     // Window and Screen graphics
     private int width, height;
-    // UI
-    private boolean ctxmenu_visible;
-
-    /**
-     * Toggle visibility of drop-down context menu.
-     */
-    // TODO: Find longest button (string) and if menu will go offscreen, adjust accordingly.
-    private void toggleCtxMenu() {
-        if (ctxmenu_visible) {
-            btn_ctxmenu_1.remove();
-            btn_ctxmenu_2.remove();
-        }
-        else {
-            btn_ctxmenu_1.setPosition(Gdx.input.getX(), height - Gdx.input.getY() - btn_ctxmenu_1.getHeight()); // Move to mouse cursor
-            btn_ctxmenu_2.setPosition(btn_ctxmenu_1.getX(), btn_ctxmenu_1.getY() - btn_ctxmenu_2.getHeight()); // Move to below first button
-            stage.addActor(btn_ctxmenu_1);
-            stage.addActor(btn_ctxmenu_2);
-        }
-        ctxmenu_visible = !ctxmenu_visible;
-    }
 
     /**
      * Free resources when this screen is no longer needed.
@@ -90,19 +58,7 @@ public class HexEditor implements Screen {
      * @see Screen#hide
      */
     public void hide() {
-        if (ctxmenu_visible)
-            toggleCtxMenu();
-
-        /*
-         * Remove UI Element Listeners
-         */
-        btn_ctxmenu_2.removeListener();
-        btn_ctxmenu_1.removeListener();
-
-        stage.removeListener(cameraListener);
-        stage.removeListener(keyListener);
-        stage.removeListener(rmbListener);
-
+        // Remove UI Element Listeners
         ui.hide();
     }
 
@@ -136,8 +92,7 @@ public class HexEditor implements Screen {
         game.font.draw(batch, "TEST", 50, 50);
         batch.end();
         // Render UI (actors)
-        stage.act(delta);
-        stage.draw();
+        ui.render(delta);
     }
 
     /**
@@ -154,10 +109,6 @@ public class HexEditor implements Screen {
 
         ui.update(width, height); // Update UI
         game_camera.update(width, height); // Update game display while maintaining its position relative to the window
-
-        // Update UI elements
-        if (ctxmenu_visible)
-            toggleCtxMenu();
     }
 
     /**
@@ -171,14 +122,8 @@ public class HexEditor implements Screen {
      * Setup this screen when it becomes the current {@link Screen} for a {@link Game}.
      */
     public void show() {
+        // Show UI Element Listeners
         ui.show();
-
-        stage.addListener(rmbListener);
-        stage.addListener(keyListener);
-        stage.addListener(cameraListener);
-
-        btn_ctxmenu_1.addListener();
-        btn_ctxmenu_2.addListener();
     }
 
     /**
@@ -199,53 +144,23 @@ public class HexEditor implements Screen {
         renderer.setView(game_camera);
         batch = renderer.getBatch();
         // UI
-        ui = new EditorUI(game_camera, game.font, game, callingScreen);
-        stage = ui.getStage();
-        btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", game.font) {
-            @Override
-            public void onClick() {
-                System.out.println("Clicked menu button 1.");
-            }
-        };
-        btn_ctxmenu_2 = new ResponsiveTextButton("Thing 2", game.font) {
-            @Override
-            public void onClick() {
-                System.out.println("Clicked menu button 2.");
-            }
-        };
-        rmbListener = new ClickListener(Input.Buttons.RIGHT) {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                toggleCtxMenu();
-            }
-        };
-        keyListener = new InputListener() {
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.Q) {
-                    game.setScreen(callingScreen);
-                    dispose();
-                    return true;
+        ui = new EditorUI(
+            game_camera,
+            game.font,
+            game,
+            callingScreen,
+            new ResponsiveTextButton("Thing 1", game.font) {
+                @Override
+                public void onClick() {
+                    System.out.println("Clicked hex menu button 1.");
                 }
-                return false;
+            },
+            new ResponsiveTextButton("Thing 2", game.font) {
+                @Override
+                public void onClick() {
+                    System.out.println("Clicked hex menu button 2.");
+                }
             }
-        };
-        cameraListener = new DragListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-            @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                if (ctxmenu_visible)
-                    toggleCtxMenu();
-            }
-        };
-
-        /*
-         * Set instance variables
-         */
-        // UI
-        ctxmenu_visible = false;
+        );
     }
 }

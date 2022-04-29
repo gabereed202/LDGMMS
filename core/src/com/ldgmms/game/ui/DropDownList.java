@@ -1,12 +1,15 @@
 package com.ldgmms.game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class DropDownList {
     private final Stage stage;
-    private final Actor[] actors;
+    private final ResponsiveTextButton[] buttons;
+    private final ClickListener listener;
 
     private int height = 0;
     private boolean visible = false;
@@ -16,29 +19,27 @@ public class DropDownList {
      */
     // TODO: Find longest button (string) and if menu will go offscreen, adjust accordingly.
     private void toggle() {
-        if (visible)
-            for (Actor item : actors)
-                item.remove();
+        if (visible) {
+            for (ResponsiveTextButton button : buttons) {
+                button.removeListener();
+                button.remove();
+            }
+        }
         else {
             float x = Gdx.input.getX(); // Move to mouse cursor
             float y = height - Gdx.input.getY();
-            for (Actor item : actors) {
-                y -= item.getHeight(); // Move to below the previous button
-                item.setPosition(x, y);
-                stage.addActor(item);
+            for (ResponsiveTextButton button : buttons) {
+                y -= button.getHeight(); // Move to below the previous button
+                button.setPosition(x, y);
+                stage.addActor(button);
+                button.addListener();
             }
         }
         visible = !visible;
     }
 
-    public void addListeners() {
-        for (Actor item : actors) {
-            if (item instanceof ResponsiveTextButton)
-                ((ResponsiveTextButton)item).addListener();
-            else
-                item.getListeners();
-                item.clearListeners();
-        }
+    public void addListener() {
+        stage.addListener(listener);
     }
 
     public void hide() {
@@ -46,24 +47,27 @@ public class DropDownList {
             toggle();
     }
 
-    public void removeListeners() {
-        for (Actor item : actors) {
-            if (item instanceof ResponsiveTextButton)
-                ((ResponsiveTextButton)item).removeListener();
-            else
-                item.clearListeners();
-        }
+    public void removeListener() {
+        stage.removeListener(listener);
+        hide();
     }
 
     public void update(int height) {
         this.height = height;
+        hide();
     }
 
-    public DropDownList(Stage stage, Actor... actors) {
+    public DropDownList(Stage stage, ResponsiveTextButton... buttons) {
         this.stage = stage;
-        this.actors = new ResponsiveTextButton[actors.length];
+        this.buttons = new ResponsiveTextButton[buttons.length];
         int index = 0;
-        for (Actor actor : actors)
-            this.actors[index++] = actor;
+        for (ResponsiveTextButton button : buttons)
+            this.buttons[index++] = button;
+        listener = new ClickListener(Input.Buttons.RIGHT) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                toggle();
+            }
+        };
     }
 }
