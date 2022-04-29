@@ -43,7 +43,7 @@ public class HexEditor implements Screen {
     // UI
     private final EditorUI ui;
     private final Stage stage;
-    private final ResponsiveTextButton btn_quit, btn_ctxmenu_1, btn_ctxmenu_2;
+    private final ResponsiveTextButton btn_ctxmenu_1, btn_ctxmenu_2;
     private final ClickListener rmbListener;
     private final InputListener keyListener;
     private final DragListener cameraListener;
@@ -98,7 +98,6 @@ public class HexEditor implements Screen {
          */
         btn_ctxmenu_2.removeListener();
         btn_ctxmenu_1.removeListener();
-        btn_quit.removeListener();
 
         stage.removeListener(cameraListener);
         stage.removeListener(keyListener);
@@ -157,7 +156,6 @@ public class HexEditor implements Screen {
         game_camera.update(width, height); // Update game display while maintaining its position relative to the window
 
         // Update UI elements
-        btn_quit.setPosition(0.0f, height - btn_quit.getHeight());
         if (ctxmenu_visible)
             toggleCtxMenu();
     }
@@ -179,7 +177,6 @@ public class HexEditor implements Screen {
         stage.addListener(keyListener);
         stage.addListener(cameraListener);
 
-        btn_quit.addListener();
         btn_ctxmenu_1.addListener();
         btn_ctxmenu_2.addListener();
     }
@@ -202,15 +199,8 @@ public class HexEditor implements Screen {
         renderer.setView(game_camera);
         batch = renderer.getBatch();
         // UI
-        ui = new EditorUI(game.batch, game_camera);
+        ui = new EditorUI(game_camera, game.font, game, callingScreen);
         stage = ui.getStage();
-        btn_quit = new ResponsiveTextButton("Return to Editor Menu", game.font) {
-            @Override
-            public void onClick() {
-                game.setScreen(callingScreen);
-                dispose();
-            }
-        }; // TODO: set graphic?
         btn_ctxmenu_1 = new ResponsiveTextButton("Thing 1", game.font) {
             @Override
             public void onClick() {
@@ -242,13 +232,15 @@ public class HexEditor implements Screen {
         };
         cameraListener = new DragListener() {
             @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 if (ctxmenu_visible)
                     toggleCtxMenu();
             }
         };
-        // Add UI to stage
-        stage.addActor(btn_quit);
 
         /*
          * Set instance variables

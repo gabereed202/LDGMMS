@@ -1,9 +1,11 @@
 package com.ldgmms.game.ui;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,6 +22,7 @@ public class EditorUI {
     private final Stage stage;
     private final InputListener keyListener;
     private final DragListener cameraListener;
+    private final ResponsiveTextButton quitButton;
 
     public void dispose() {
         stage.dispose();
@@ -30,6 +33,9 @@ public class EditorUI {
     }
 
     public void hide() {
+        // Actors
+        quitButton.removeListener();
+
         stage.removeListener(cameraListener);
         stage.removeListener(keyListener);
     }
@@ -38,19 +44,26 @@ public class EditorUI {
         Gdx.input.setInputProcessor(stage);
         stage.addListener(keyListener);
         stage.addListener(cameraListener);
+
+        // Actors
+        quitButton.addListener();
     }
 
     public void update(int width, int height) {
+        // Camera/viewport
         viewport.update(width, height);
         camera.position.x = width / 2.0f;
         camera.position.y = height / 2.0f;
         camera.update(); // Update matrices
+
+        // Actors
+        quitButton.setPosition(0.0f, height - quitButton.getHeight());
     }
 
-    public EditorUI(Batch batch, DynamicCamera game_camera) {
+    public EditorUI(DynamicCamera game_camera, BitmapFont font, Game game, Screen callingScreen) {
         camera = new OrthographicCamera();
         viewport = new ScreenViewport(camera);
-        stage = new Stage(viewport, batch);
+        stage = new Stage(viewport);
 
         keyListener = new InputListener() {
             @Override
@@ -129,5 +142,13 @@ public class EditorUI {
                 setDragStartY(y);
             }
         };
+        quitButton = new ResponsiveTextButton("Return to Editor Menu", font) {
+            @Override
+            public void onClick() {
+                game.setScreen(callingScreen);
+                dispose();
+            }
+        }; // TODO: set graphic?
+        stage.addActor(quitButton);
     }
 }
