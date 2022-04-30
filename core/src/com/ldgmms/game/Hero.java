@@ -1,7 +1,6 @@
 package com.ldgmms.game;
 
 public class Hero extends GenericUnit{
-
     // experience stats
     float exp;
     float[] jobExp;
@@ -9,36 +8,25 @@ public class Hero extends GenericUnit{
     int level;
     float[] levelRequirements;      // where exp needed to level up is stored
     float[] jobLevelRequirements;
-
     // base character stats, not associated with a specific job
-    int strength;
-    int defense;
-    int magic;
-
     // equipment will have just 2 slots, 0 indicates primary class, 1 indicates secondary class
     int[] equipment;
-
     Equipment equipmentStorage;
-
     Skills baseSkills;
     Skills specialCombo;
-
     // to avoid confusion, I will be referencing the characters in-game "class" as their job
     // not sure if this will always remain represented as an int
     // each job int will also (most likely) be an index for the skills and jobExp arrays
     // this value will change quite a bit as the
     int job;
     int secondary;
-
     HeroClass assassin;
     HeroClass scholar;
     HeroClass ranger;
     HeroClass sorcerer;
     HeroClass barbarian;
-
     HeroClass currentJob;
     HeroClass secondaryJob;
-
     // job stats, each of these corresponds to a different class, levelling up class = higher value
     // each stat will act as a multiplier to increase success rate or magnitude of a skill
     int sneak;          // assassin, 0
@@ -46,12 +34,16 @@ public class Hero extends GenericUnit{
     int accuracy;       // ranger, 2
     int wisdom;         // sorcerer, 3
     int brawn;          // barbarian, 4
-
     // each hero has skills from the Skills class stored in a hashtable in Skills class, not yet included
     // Skills[] skills;
 
 
-    public Hero() {
+    public Hero(int x, int y, int ID) {
+
+        this.xPosition = x;
+        this.yPosition = y;
+
+        this.ID = ID;
 
         this.currentJob = null;
         this.job = -1;
@@ -95,34 +87,34 @@ public class Hero extends GenericUnit{
         this.specialCombo = new Skills();
 
         this.baseSkills = new Skills();
-        this.baseSkills.addSkill(1, "Base Melee Attack", this.strength, 0, 0);
-        this.baseSkills.addSkill(2, "Base Magic Attack", this.magic, 0, 0);
-        this.baseSkills.addSkill(3, "Base Ranged Attack", this.strength/2, 0, 0);
+        this.baseSkills.addSkill(1, "Base Melee Attack", this.strength, 0, 0, 1);
+        this.baseSkills.addSkill(2, "Base Magic Attack", this.magic, 0, 0, 1);
+        this.baseSkills.addSkill(3, "Base Ranged Attack", this.strength/2, 0, 0, 2);
 
         // each hero's class starts with one skill each, which does damage equal to their class's stat
         this.assassin = new HeroClass(0, "Assassin");
-        this.assassin.skills.addSkill(this.assassin.currentSkill, "Sneak Attack", this.sneak, 0, 5);
-        this.assassin.secondarySkill.addSkill(1, "Shadow Blitz", this.sneak, 0, 10);
+        this.assassin.skills.addSkill(this.assassin.currentSkill, "Sneak Attack", this.sneak, 0, 5, 1);
+        this.assassin.secondarySkill.addSkill(1, "Shadow Blitz", this.sneak, 0, 10, 1);
         this.assassin.currentSkill++;
 
         this.scholar = new HeroClass(1, "Scholar");
-        this.scholar.skills.addSkill(this.scholar.currentSkill, "Mana Surge", this.intelligence, 5, 0);
-        this.scholar.secondarySkill.addSkill(1, "Studious Blast", this.intelligence, 10, 0);
+        this.scholar.skills.addSkill(this.scholar.currentSkill, "Mana Surge", this.intelligence, 5, 0, 1);
+        this.scholar.secondarySkill.addSkill(1, "Studious Blast", this.intelligence, 10, 0, 1);
         this.scholar.currentSkill++;
 
         this.ranger = new HeroClass(2, "Ranger");
-        this.ranger.skills.addSkill(this.ranger.currentSkill, "True Shot", this.accuracy, 0, 5);
-        this.ranger.secondarySkill.addSkill(1, "Throwing Knife", this.accuracy, 0, 10);
+        this.ranger.skills.addSkill(this.ranger.currentSkill, "True Shot", this.accuracy, 0, 5, 2);
+        this.ranger.secondarySkill.addSkill(1, "Throwing Knife", this.accuracy, 0, 10, 2);
         this.ranger.currentSkill++;
 
         this.sorcerer = new HeroClass(3, "Sorcerer");
-        this.sorcerer.skills.addSkill(this.sorcerer.currentSkill, "Magic Strike", this.wisdom, 5, 0);
-        this.sorcerer.secondarySkill.addSkill(1, "Magical Spell", this.wisdom, 10, 0);
+        this.sorcerer.skills.addSkill(this.sorcerer.currentSkill, "Magic Strike", this.wisdom, 5, 0, 1);
+        this.sorcerer.secondarySkill.addSkill(1, "Magical Spell", this.wisdom, 10, 0, 1);
         this.sorcerer.currentSkill++;
 
         this.barbarian = new HeroClass(4, "Barbarian");
-        this.barbarian.skills.addSkill(this.barbarian.currentSkill, "Brute Force", this.brawn, 0, 5);
-        this.barbarian.secondarySkill.addSkill(1, "Unrelenting Hit", this.brawn, 0, 10);
+        this.barbarian.skills.addSkill(this.barbarian.currentSkill, "Brute Force", this.brawn, 0, 5, 1);
+        this.barbarian.secondarySkill.addSkill(1, "Unrelenting Hit", this.brawn, 0, 10, 1);
         this.barbarian.currentSkill++;
 
     }
@@ -133,6 +125,8 @@ public class Hero extends GenericUnit{
         }
         return false;
     }
+
+    public int getID() { return this.ID; }
 
 
     private void setNewJob(int order, int jobID) {
@@ -203,29 +197,28 @@ public class Hero extends GenericUnit{
     private void checkSpecialCombo(){
         this.specialCombo.map.remove(1);
         if(this.job == 0 && this.secondary == 2){
-            this.specialCombo.addSkill(1, "Shadow Shot", this.sneak*this.accuracy, 10, 15);
+            this.specialCombo.addSkill(1, "Shadow Shot", this.sneak*this.accuracy, 10, 15, 2);
         }
         else if(this.job == 1 && this.secondary == 2){
-            this.specialCombo.addSkill(1, "Weakspot Shot", this.intelligence*this.accuracy, 5, 20);
+            this.specialCombo.addSkill(1, "Weakspot Shot", this.intelligence*this.accuracy, 5, 20, 2);
         }
         else if(this.job == 2 && this.secondary == 4){
-            this.specialCombo.addSkill(1, "Bow Thrash", this.accuracy*this.brawn, 0, 25);
+            this.specialCombo.addSkill(1, "Bow Thrash", this.accuracy*this.brawn, 0, 25, 1);
         }
         else if(this.job == 3 && this.secondary == 4){
-            this.specialCombo.addSkill(1, "Magical Thrash", this.wisdom*this.brawn, 15, 10);
+            this.specialCombo.addSkill(1, "Magical Thrash", this.wisdom*this.brawn, 15, 10, 1);
         }
         else if(this.job == 4 && this.secondary == 1){
-            this.specialCombo.addSkill(1, "Calculated Charge", this.brawn*this.intelligence, 5, 20);
+            this.specialCombo.addSkill(1, "Calculated Charge", this.brawn*this.intelligence, 5, 20, 1);
         }
     }
 
+    /* slot designates index of item being changed, must be 0 or 1
+     equipment might be its own class at some point?
+     for now, 10s digit will indicate the job associated with the equipment,
+     1s digit will show attribute upgrade,
+     e.g. 28 would mean job 2, with an 8 point increase to attribute associated with that class */
     public void changeEquipment(int slot, EquipmentData equipment) {
-
-        // slot designates index of item being changed, must be 0 or 1
-        // equipment might be its own class at some point?
-        // for now, 10s digit will indicate the job associated with the equipment,
-        // 1s digit will show attribute upgrade,
-        // e.g. 28 would mean job 2, with an 8 point increase to attribute associated with that class
 
         int prevEquip = this.equipment[slot];
         int prevJob = prevEquip / 10;
@@ -281,51 +274,6 @@ public class Hero extends GenericUnit{
         }
 
         return;
-
-
-        /*
-        if (this.level >= 10) {
-            // base level is maxed out
-            //if (this.jobLevels[this.job] >= 10) {
-                // job level is also maxed out, don't do anything
-            //    return;
-            //}
-
-            // base level is maxed, but job level isn't
-            // increment total exp for that job and check if there was a job level up
-            //this.jobExp[this.job] += exp;
-            //if (this.jobExp[this.job] >= this.jobLevelRequirements[this.jobLevels[this.job] - 1]) {
-            //    this.levelUp(this.job);
-            //}
-            return;
-        }
-
-        if (this.jobLevels[this.job] >= 10) {
-            // if the job level is maxed out we already know the base level isn't
-            // increment base experience and check for a base level up
-            this.exp += exp;
-            if (this.exp >= this.levelRequirements[this.level - 1]) {
-                this.levelUp(-1);
-            }
-            return;
-        }
-
-        // neither level is maxed out so add exp to both base and level exp
-        // check for a level up on both
-
-        this.exp += exp;
-        this.jobExp[this.job] += exp;
-
-        if (this.exp >= this.levelRequirements[this.level - 1]) {
-            this.levelUp(-1);
-        }
-        if (this.jobExp[this.job] >= this.jobLevelRequirements[this.jobLevels[this.job] - 1]) {
-            this.levelUp(this.job);
-        }
-
-        return;
-
-         */
     }
 
     private void levelUp(int job) {
@@ -364,33 +312,33 @@ public class Hero extends GenericUnit{
 
                         // this has potential to steal an item
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Pickpocket", this.sneak / 2, 0, 10);
+                                "Pickpocket", this.sneak / 2, 0, 10, 1);
                         this.currentJob.currentSkill++;
 
                     } else if (this.jobLevels[this.job] == 4) {
 
                         // has potential to poison the target
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Poison Blade", this.sneak, 10, 0);
+                                "Poison Blade", this.sneak, 10, 0, 1);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 6) {
 
                         // inflicts piercing damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Shadow Strike", this.sneak + this.strength, 0, 15);
+                                "Shadow Strike", this.sneak + this.strength, 0, 15, 1);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 8) {
 
                         // heals the user by a portion of the damage dealt
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Leech Blade", this.sneak, 0, 20);
+                                "Leech Blade", this.sneak, 0, 20, 1);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 10) {
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Nightblood", this.sneak * this.strength, 0, 25);
+                                "Nightblood", this.sneak * this.strength, 0, 25, 1);
                         this.currentJob.currentSkill++;
                     }
                 } else {
@@ -405,33 +353,33 @@ public class Hero extends GenericUnit{
 
                         // has potential to do ice damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Ice Rune", this.intelligence, 10, 0);
+                                "Ice Rune", this.intelligence, 10, 0, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 4) {
 
                         // has potential to do fire damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Fire Rune", this.intelligence, 15, 0);
+                                "Fire Rune", this.intelligence, 15, 0, 1);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 6) {
 
                         //this requires a lot of stamina
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Hurl Book", this.intelligence + this.strength, 0, 75);
+                                "Hurl Book", this.intelligence + this.strength, 0, 75, 2);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 8) {
 
                         // has potential to inflict random status effect on target
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Elemental Surge", this.intelligence + this.magic, 20, 0);
+                                "Elemental Surge", this.intelligence + this.magic, 20, 0, 1);
 
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 10) {
 
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Mana Storm", this.intelligence * this.magic, 25, 0);
+                                "Mana Storm", this.intelligence * this.magic, 25, 0, 2);
                         this.currentJob.currentSkill++;
                     }
                 } else {
@@ -445,31 +393,31 @@ public class Hero extends GenericUnit{
 
                         // inflicts piercing damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Piercing Arrow", this.accuracy, 0, 10);
+                                "Piercing Arrow", this.accuracy, 0, 10, 2);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 4) {
 
                         // potential to inflict poison
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Poison Arrow", this.accuracy, 0, 15);
+                                "Poison Arrow", this.accuracy, 0, 15, 2);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 6) {
 
                         // has potential to inflict fire damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Fire Arrow", this.accuracy, 20, 0);
+                                "Fire Arrow", this.accuracy, 20, 0, 2);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 8) {
 
                         // pierce damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Double Shot", this.accuracy + this.strength, 0, 20);
+                                "Double Shot", this.accuracy + this.strength, 0, 20, 3);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 10) {
 
                         // pierce damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Triple Shot", this.accuracy * this.strength, 0, 25);
+                                "Triple Shot", this.accuracy * this.strength, 0, 25, 3);
                         this.currentJob.currentSkill++;
                     }
                 } else {
@@ -483,30 +431,30 @@ public class Hero extends GenericUnit{
 
                         // fire damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Fire Ball", this.wisdom, 10, 0);
+                                "Fire Ball", this.wisdom, 10, 0, 2);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 4) {
 
                         // ice damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Blizzard", this.wisdom, 10, 0);
+                                "Blizzard", this.wisdom, 10, 0, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 6) {
 
                         // poison damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Poison", this.wisdom, 15, 0);
+                                "Poison", this.wisdom, 15, 0, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 8) {
 
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Magic Blast", this.wisdom + this.magic, 10, 10);
+                                "Magic Blast", this.wisdom + this.magic, 10, 10, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 10) {
 
                         // chance to inflict any kind of damage type
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Elemental Storm", this.wisdom * this.magic, 25, 0);
+                                "Elemental Storm", this.wisdom * this.magic, 25, 0, 2);
                         this.currentJob.currentSkill++;
                     }
                 } else {
@@ -520,31 +468,31 @@ public class Hero extends GenericUnit{
 
                         // cut damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Slicing Attack", this.brawn, 0, 10);
+                                "Slicing Attack", this.brawn, 0, 10, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 4) {
 
                         // cut damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Blade Storm", this.brawn, 0, 10);
+                                "Blade Storm", this.brawn, 0, 10, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 6) {
 
                         // fire damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Raging Fire", this.brawn, 10, 5);
+                                "Raging Fire", this.brawn, 10, 5, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 8) {
 
                         // Ice Damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Frozen Strike", this.brawn + this.strength, 0, 20);
+                                "Frozen Strike", this.brawn + this.strength, 0, 20, 1);
                         this.currentJob.currentSkill++;
                     } else if (this.jobLevels[this.job] == 10) {
 
                         // cut damage
                         this.currentJob.skills.addSkill(this.currentJob.currentSkill,
-                                "Storm of Swords", this.brawn, 0, 0);
+                                "Storm of Swords", this.brawn, 0, 0, 1);
                         this.currentJob.currentSkill++;
                     }
                 } else {
@@ -564,7 +512,7 @@ public class Hero extends GenericUnit{
     }
 
     public static void main(String[] args) {
-        Hero hero = new Hero();
+        Hero hero = new Hero(0, 0, 1);
         hero.equipmentStorage.addEquipment(1, "sword", 4, 7);
         hero.changeEquipment(0, hero.equipmentStorage.map.get(1));
         hero.gainExp(5030.56f);

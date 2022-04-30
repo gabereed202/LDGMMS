@@ -1,5 +1,5 @@
 
-package com.ldgmms.game;
+/*package com.ldgmms.game;
 
 import com.badlogic.gdx.math.MathUtils;
 
@@ -161,6 +161,6 @@ public class DamTypes { //casting from float to int is lossless iff the magnitud
         }
     }
 }
-
+*/
 
 

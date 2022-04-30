@@ -1,4 +1,4 @@
-package com.ldgmms.game;
+/*package com.ldgmms.game;
 
 import com.badlogic.gdx.math.MathUtils;
 import org.junit.Test;
@@ -226,3 +226,5 @@ public class DanTests {
         //System.out.print(u.getHp());
     }
 }
+
+ */

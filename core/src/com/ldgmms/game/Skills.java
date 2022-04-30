@@ -10,8 +10,8 @@ public class Skills {
     public Skills(){
         this.map = new HashMap <Integer, SkillData>();
     }
-    public void addSkill(int key, String name, int damage, int mana, int stamina){
-        SkillData newSkill = new SkillData(key, name, damage, mana, stamina);
+    public void addSkill(int key, String name, int damage, int mana, int stamina, int range){
+        SkillData newSkill = new SkillData(key, name, damage, mana, stamina, range);
         this.map.put(newSkill.getKey(), newSkill);
         return;
     }
@@ -39,14 +39,16 @@ class SkillData {
     private int damage;
     private int mana;
     private int stamina;
+    private int range;
 
     //constructor
-    public SkillData(int key, String skill_name, int damage, int mana, int stamina) {
+    public SkillData(int key, String skill_name, int damage, int mana, int stamina, int range) {
         this.key = key;
         this.skill_name = skill_name;
         this.damage = damage;
         this.mana = mana;
         this.stamina = stamina;
+        this.range = range;
     }
 
     public int getKey() {
@@ -66,6 +68,8 @@ class SkillData {
     }
 
     public int getStamina() { return stamina; }
+
+    public int getRange() {return range; }
 
     @Override
     public String toString() {

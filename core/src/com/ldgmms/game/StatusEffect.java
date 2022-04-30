@@ -1,4 +1,4 @@
-package com.ldgmms.game;
+/*package com.ldgmms.game;
 
 import java.util.ArrayList;
 
@@ -486,4 +486,4 @@ public class StatusEffect {
             }
         }
     }
-}
+}*/
