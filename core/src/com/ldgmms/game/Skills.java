@@ -329,11 +329,9 @@ public class Skills {
     }
 
     public int modifyAllSkillValues(String value, String operation, double x) {
-        /*skillMap.entrySet().stream().forEach(e -> { //for each element in set of mappings in hashMap
+        skillMap.entrySet().stream().forEach(e -> { //for each element in set of mappings in hashMap
             modifySkillValues(e.getKey(), value, operation, x);
         });
-
-         */
         return 0; //success
     }
 
