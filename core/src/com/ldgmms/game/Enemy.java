@@ -1,19 +1,11 @@
-/*package com.ldgmms.game;
+package com.ldgmms.game;
 
-public class Enemy extends GenericUnit{ //this whole class could be removed, and we could add an int that determines sides on the GenericUnit class, commented out for now
-    String spritePath;
-    String name;
+public abstract class Enemy {
+    public String EnemyType;
+    public int MeleeDamage;
+    public int Armor;
+    public int Health;
+    public int Age;
 
-    public Enemy(String spritePath, String name, int health, int poisonResistance, int cutResistance,
-                 int pierceResistance, int fireResistance, int iceResistance){
-
-        this.spritePath = spritePath;
-        this.name = name;
-        this.health = health;
-        this.poisonResistance = poisonResistance;
-        this.cutResistance = cutResistance;
-        this.pierceResistance = pierceResistance;
-        this.fireResistance = fireResistance;
-        this.iceResistance = iceResistance;
-    }
-}*/
+    public abstract void fight(int attack, int defend);
+}
